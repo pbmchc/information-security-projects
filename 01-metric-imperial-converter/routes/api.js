@@ -16,15 +16,20 @@ module.exports = function (app) {
   var convertHandler = new ConvertHandler();
 
   app.route('/api/convert')
-    .get(function (req, res){
-      var input = req.query.input;
-      var initNum = convertHandler.getNum(input);
-      var initUnit = convertHandler.getUnit(input);
-      var returnNum = convertHandler.convert(initNum, initUnit);
-      var returnUnit = convertHandler.getReturnUnit(initUnit);
-      var toString = convertHandler.getString(initNum, initUnit, returnNum, returnUnit);
-      
-      //res.json
+    .get(function ({query: {input}}, res){
+      const initNum = convertHandler.getNum(input);
+      const initUnit = convertHandler.getUnit(input);
+      const returnNum = convertHandler.convert(initNum, initUnit);
+      const returnUnit = convertHandler.getReturnUnit(initUnit);
+      const message = convertHandler.getString(initNum, initUnit, returnNum, returnUnit);
+
+      return res.json({
+        initNum,
+        initUnit,
+        returnNum,
+        returnUnit,
+        string: message
+      });
     });
     
 };
