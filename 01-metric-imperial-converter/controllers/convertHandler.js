@@ -1,32 +1,28 @@
-/*
-*
-*
-*       Complete the handler logic below
-*       
-*       
-*/
+'use strict';
 
-const {CHARACTER_REGEX, UNIT_MULTIPLIERS, UNIT_NAMES, UNITS} = require('./constants');
+const CHARACTER_REGEX = require('../constants/regularExpressions');
+const VALIDATION_ERRORS = require('../constants/validationErrors');
+const {UNIT_MULTIPLIERS, UNIT_NAMES, UNITS} = require('../constants/units');
 
 function ConvertHandler() {
   this.getNum = function(input) {
-    const characterIndex = this._getCharacterIndex(input);
-
-    if(characterIndex < 0) {
-      return null;
+    if(!input.length) {
+      return VALIDATION_ERRORS.INVALID;
     }
 
-    return input.substr(0, characterIndex)
-                .split('/')
-                .reduce((prev, curr) => prev / curr);
+    const characterIndex = this._getCharacterIndex(input) || input.length;
+    const value = input.substr(0, characterIndex)
+                       .split('/')
+                       .reduce((prev, curr) => prev / curr);
+
+    return !isNaN(value) ? value : VALIDATION_ERRORS.INVALID;
   };
   
   this.getUnit = function(input) {
     const characterIndex = this._getCharacterIndex(input);
+    const unit = input.substr(characterIndex);
 
-    return characterIndex >= 0
-      ? input.substr(characterIndex)
-      : null;
+    return UNIT_NAMES[unit] ? unit : VALIDATION_ERRORS.INVALID;
   };
 
   this.convert = function(value, unit) {
@@ -60,7 +56,7 @@ function ConvertHandler() {
   this._getCharacterIndex = function(input) {
     const match = CHARACTER_REGEX.exec(input);
 
-    return match ? match.index : -1;
+    return match ? match.index : null;
   }
 }
 

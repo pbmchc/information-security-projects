@@ -67,6 +67,10 @@
             success: function(data) {
               $('#result').text(data.string || data);
               $('#jsonResult').text(JSON.stringify(data));
+            },
+            error: function({responseText}){
+              $('#result').text('Error - ' + $('#convertField').val())
+              $('#jsonResult').text(responseText);
             }
           });
         });

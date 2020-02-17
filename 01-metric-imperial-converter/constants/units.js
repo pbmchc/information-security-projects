@@ -1,4 +1,3 @@
-const CHARACTER_REGEX = /[a-zA-Z]/;
 const UNITS = [['gal', 'L'], ['lbs', 'kg'], ['mi', 'km']];
 const UNIT_MULTIPLIERS = {
   gal: 3.78541,
@@ -15,7 +14,6 @@ const UNIT_NAMES = {
 };
 
 module.exports = {
-  CHARACTER_REGEX,
   UNIT_MULTIPLIERS,
   UNIT_NAMES,
   UNITS
