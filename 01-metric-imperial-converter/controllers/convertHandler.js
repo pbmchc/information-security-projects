@@ -11,16 +11,18 @@ function ConvertHandler() {
     }
 
     const characterIndex = this._getCharacterIndex(input) || input.length;
-    const value = input.substr(0, characterIndex)
-                       .split('/')
-                       .reduce((prev, curr) => prev / curr);
+    const parts = input.substr(0, characterIndex).split('/');
 
-    return !isNaN(value) ? value : VALIDATION_ERRORS.INVALID;
+    return parts.length <= 2 ? this._calculateValue(parts) : VALIDATION_ERRORS.INVALID;
   };
   
   this.getUnit = function(input) {
+    if(!input.length) {
+      return VALIDATION_ERRORS.INVALID;
+    }
+
     const characterIndex = this._getCharacterIndex(input);
-    const unit = input.substr(characterIndex);
+    const unit = input.substr(characterIndex).toLowerCase();
 
     return UNIT_NAMES[unit] ? unit : VALIDATION_ERRORS.INVALID;
   };
@@ -29,7 +31,7 @@ function ConvertHandler() {
     const multiplier = UNIT_MULTIPLIERS[unit] || 1 / UNIT_MULTIPLIERS[this.getReturnUnit(unit)];
     const result = value * multiplier;
 
-    return result.toFixed(5);
+    return Number(result.toFixed(5));
   };
   
   this.getReturnUnit = function(sourceUnit) {
@@ -49,9 +51,15 @@ function ConvertHandler() {
     return `${input} converts to ${result}`;
   };
 
-  this._spellOutUnit = function(unit) {
+  this.spellOutUnit = function(unit) {
     return UNIT_NAMES[unit];
   };
+
+  this._calculateValue = function(parts) {
+    const value = parts.reduce((prev, curr) => prev / curr);
+    
+    return !isNaN(value) ? value : VALIDATION_ERRORS.INVALID;
+  }
 
   this._getCharacterIndex = function(input) {
     const match = CHARACTER_REGEX.exec(input);

@@ -1,4 +1,4 @@
-const UNITS = [['gal', 'L'], ['lbs', 'kg'], ['mi', 'km']];
+const UNITS = [['gal', 'l'], ['lbs', 'kg'], ['mi', 'km']];
 const UNIT_MULTIPLIERS = {
   gal: 3.78541,
   lbs: 0.453592,
@@ -6,7 +6,7 @@ const UNIT_MULTIPLIERS = {
 };
 const UNIT_NAMES = {
   'gal': 'gallons',
-  'L': 'liters',
+  'l': 'liters',
   'mi': 'miles',
   'km': 'kilometers',
   'lbs': 'pounds',

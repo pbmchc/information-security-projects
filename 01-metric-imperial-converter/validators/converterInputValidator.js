@@ -2,7 +2,7 @@
 
 const VALIDATION_ERRORS = require('../constants/validationErrors');
 
-const INPUT_ERROR_MESSAGES = {
+const CONVERTER_ERROR_MESSAGES = {
     ALL: 'invalid number and unit',
     UNIT: 'invalid unit',
     VALUE: 'invalid number'
@@ -15,14 +15,14 @@ function validate(value, unit) {
     };
 
     if(errors.value && errors.unit) {
-        return {error: INPUT_ERROR_MESSAGES.ALL};
+        return {error: CONVERTER_ERROR_MESSAGES.ALL};
     }
 
     if(errors.value) {
-        return {error: INPUT_ERROR_MESSAGES.VALUE};
+        return {error: CONVERTER_ERROR_MESSAGES.VALUE};
     }
 
-    return errors.unit ? {error: INPUT_ERROR_MESSAGES.UNIT} : null;
+    return errors.unit ? {error: CONVERTER_ERROR_MESSAGES.UNIT} : null;
 }
 
 module.exports = {validate};
