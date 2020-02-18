@@ -25,4 +25,4 @@ function validate(value, unit) {
     return errors.unit ? {error: CONVERTER_ERROR_MESSAGES.UNIT} : null;
 }
 
-module.exports = {validate};
+module.exports = {validate, CONVERTER_ERROR_MESSAGES};

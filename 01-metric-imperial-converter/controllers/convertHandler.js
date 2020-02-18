@@ -22,9 +22,9 @@ function ConvertHandler() {
     }
 
     const characterIndex = this._getCharacterIndex(input);
-    const unit = input.substr(characterIndex).toLowerCase();
+    const unit = input.substr(characterIndex);
 
-    return UNIT_NAMES[unit] ? unit : VALIDATION_ERRORS.INVALID;
+    return UNIT_NAMES[unit.toLowerCase()] ? unit : VALIDATION_ERRORS.INVALID;
   };
 
   this.convert = function(value, unit) {
@@ -35,7 +35,7 @@ function ConvertHandler() {
   };
   
   this.getReturnUnit = function(sourceUnit) {
-    const units = UNITS.find(tuple => tuple.includes(sourceUnit));
+    const units = UNITS.find(tuple => tuple.includes(sourceUnit.toLowerCase()));
 
     if(!units) {
       return null;
@@ -45,20 +45,20 @@ function ConvertHandler() {
   };
   
   this.getString = function(value, unit, returnValue, returnUnit) {
-    const input = `${value} ${this._spellOutUnit(unit)}`;
-    const result = `${returnValue} ${this._spellOutUnit(returnUnit)}`;
+    const input = `${value} ${this.spellOutUnit(unit)}`;
+    const result = `${returnValue} ${this.spellOutUnit(returnUnit)}`;
 
     return `${input} converts to ${result}`;
   };
 
   this.spellOutUnit = function(unit) {
-    return UNIT_NAMES[unit];
+    return UNIT_NAMES[unit.toLowerCase()];
   };
 
   this._calculateValue = function(parts) {
     const value = parts.reduce((prev, curr) => prev / curr);
     
-    return !isNaN(value) ? value : VALIDATION_ERRORS.INVALID;
+    return !isNaN(value) ? Number(value) : VALIDATION_ERRORS.INVALID;
   }
 
   this._getCharacterIndex = function(input) {
