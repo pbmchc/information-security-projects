@@ -1,18 +1,17 @@
-/*
-*
-*
-*       Complete the API routing below
-*
-*
-*/
-
 'use strict';
 
 var expect = require('chai').expect;
-var MongoClient = require('mongodb');
-var ObjectId = require('mongodb').ObjectID;
+const mongoose = require('mongoose');
 
-const CONNECTION_STRING = process.env.DB; //MongoClient.connect(CONNECTION_STRING, function(err, db) {});
+const issueController = require('../controllers/issueController');
+
+mongoose.connect(
+  process.env.DB,
+  {
+    useNewUrlParser: true,
+    useCreateIndex: true
+  }
+);
 
 module.exports = function (app) {
 
@@ -23,10 +22,7 @@ module.exports = function (app) {
       
     })
     
-    .post(function (req, res){
-      var project = req.params.project;
-      
-    })
+    .post(issueController.addIssue)
     
     .put(function (req, res){
       var project = req.params.project;
