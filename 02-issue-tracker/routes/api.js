@@ -4,7 +4,7 @@ var expect = require('chai').expect;
 const mongoose = require('mongoose');
 
 const issueController = require('../controllers/issueController');
-const {createIssueValidator, deleteIssueValidator} = require('../validators/issueValidator');
+const {createIssueValidator, updateIssueValidator, deleteIssueValidator} = require('../validators/issueValidator');
 
 mongoose.connect(
   process.env.DB,
@@ -18,6 +18,6 @@ module.exports = function (app) {
   app.route('/api/issues/:project')
     .get(issueController.getIssues)
     .post(createIssueValidator, issueController.createIssue)
-    .put(issueController.updateIssue)
+    .put(updateIssueValidator, issueController.updateIssue)
     .delete(deleteIssueValidator, issueController.deleteIssue);
 };

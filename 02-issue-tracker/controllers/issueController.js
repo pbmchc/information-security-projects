@@ -25,6 +25,11 @@ function createIssue(req, res, next) {
 
 function updateIssue(req, res, next) {
     const {body} = req;
+    const {errors: [err]} = validationResult(req);
+
+    if(err) {
+        return next(prepareErrorPayload(err.msg));
+    }
 
     issueRepository.updateIssue(body, (err, result) => {
         if(err) {
