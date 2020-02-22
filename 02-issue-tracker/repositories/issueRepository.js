@@ -1,7 +1,9 @@
 'use strict';
 
 const Issue = require('../models/issue');
+const {assignDateConditions} = require('../utils/validatorUtils');
 
+const ISSUE_DATE_FIELDS = ['created_on', 'updated_on'];
 const FETCHING_ISSUES_ERROR_MESSAGE = 'Error while fetching issues';
 const SAVING_ISSUE_ERROR_MESSAGE = 'Error while saving issue';
 const UPDATING_ISSUE_ERROR_MESSAGE = (id) => `Could not update ${id}`;
@@ -40,8 +42,10 @@ function deleteIssue(issue, done) {
             : done(null, DELETING_ISSUE_SUCCESS_MESSAGE(_id)));
 }
 
-function getIssues(params, done) {
-    const query = Issue.find(params);
+function getIssues(conditions, done) {
+    ISSUE_DATE_FIELDS.forEach(field => assignDateConditions(field, conditions));
+
+    const query = Issue.find(conditions);
 
     query.exec((err, result) => {
         if (err) {

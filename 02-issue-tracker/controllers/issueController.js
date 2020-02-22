@@ -59,9 +59,16 @@ function deleteIssue(req, res, next) {
 }
 
 function getIssues(req, res, next) {
-    const {params} = req;
+    const {errors: [err]} = validationResult(req);
 
-    issueRepository.getIssues(params, (err, result) => {
+    if (err) {
+        return next(prepareErrorPayload(err.msg));
+    }
+
+    const {params, query} = req;
+    const conditions = {...params, ...query};
+
+    issueRepository.getIssues(conditions, (err, result) => {
         if (err) {
             return next(errorHandler.prepareErrorPayload(err.msg));
         }
