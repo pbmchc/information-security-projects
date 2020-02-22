@@ -4,8 +4,10 @@ const Issue = require('../models/issue');
 
 const FETCHING_ISSUES_ERROR_MESSAGE = 'Error while fetching issues';
 const SAVING_ISSUE_ERROR_MESSAGE = 'Error while saving issue';
-const DELETING_ISSUE_ERROR_MESSAGE = (id) => `Could not delete ${id}`
-const DELETING_ISSUE_SUCCESS_MESSAGE = (id) => `Deleted ${id}`
+const UPDATING_ISSUE_ERROR_MESSAGE = (id) => `Could not update ${id}`;
+const UPDATING_ISSUE_SUCCESS_MESSAGE = (id) => `Successfully updated ${id}`;
+const DELETING_ISSUE_ERROR_MESSAGE = (id) => `Could not delete ${id}`;
+const DELETING_ISSUE_SUCCESS_MESSAGE = (id) => `Deleted ${id}`;
 
 function createIssue(issue, done) {
     const newIssue = new Issue(issue);
@@ -17,6 +19,16 @@ function createIssue(issue, done) {
 
         done(null, result);
     });
+}
+
+function updateIssue(issue, done) {
+    const {_id} = issue;
+    const updatedIssue = {...issue, updated_on: Date.now()};
+
+    Issue.update({_id}, updatedIssue, (err) =>
+        err
+            ? done({msg: UPDATING_ISSUE_ERROR_MESSAGE(_id)})
+            : done(null, UPDATING_ISSUE_SUCCESS_MESSAGE(_id)));
 }
 
 function deleteIssue(issue, done) {
@@ -41,5 +53,6 @@ function getIssues(params, done) {
 }
 
 exports.createIssue = createIssue;
+exports.updateIssue = updateIssue;
 exports.deleteIssue = deleteIssue;
 exports.getIssues = getIssues;
