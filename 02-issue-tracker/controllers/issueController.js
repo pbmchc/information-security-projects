@@ -23,4 +23,17 @@ function createIssue(req, res, next) {
     });
 }
 
+function getIssues(req, res, next) {
+    const {params} = req;
+
+    issueRepository.getIssues(params, (err, result) => {
+        if (err) {
+            return next(errorHandler.prepareErrorPayload(err.msg));
+        }
+
+        res.json(result);
+    });
+}
+
 exports.createIssue = createIssue;
+exports.getIssues = getIssues;

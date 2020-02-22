@@ -3,6 +3,7 @@
 const Issue = require('../models/issue');
 
 const SAVING_ISSUE_ERROR_MESSAGE = 'Error while saving issue';
+const FETCHING_ISSUES_ERROR_MESSAGE = 'Error while fetching issues';
 
 function createIssue(issue, done) {
     const newIssue = new Issue(issue);
@@ -16,4 +17,17 @@ function createIssue(issue, done) {
     });
 }
 
+function getIssues(params, done) {
+    const query = Issue.find(params);
+
+    query.exec((err, result) => {
+        if (err) {
+            return done({ msg: FETCHING_ISSUES_ERROR_MESSAGE });
+        }
+
+        done(null, result);
+    })
+}
+
 exports.createIssue = createIssue;
+exports.getIssues = getIssues;

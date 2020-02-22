@@ -17,12 +17,7 @@ mongoose.connect(
 module.exports = function (app) {
 
   app.route('/api/issues/:project')
-  
-    .get(function (req, res){
-      var project = req.params.project;
-      
-    })
-    
+    .get(issueController.getIssues)
     .post(createIssueValidator, issueController.createIssue)
     
     .put(function (req, res){
