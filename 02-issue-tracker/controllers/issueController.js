@@ -23,6 +23,24 @@ function createIssue(req, res, next) {
     });
 }
 
+function deleteIssue(req, res, next) {
+    const {errors: [err]} = validationResult(req);
+
+    if(err) {
+        return next(prepareErrorPayload(err.msg));
+    }
+
+    const {body} = req;
+
+    issueRepository.deleteIssue(body, (err, result) => {
+        if(err) {
+            return next(prepareErrorPayload(err.msg));
+        }
+
+        res.send(result);
+    });
+}
+
 function getIssues(req, res, next) {
     const {params} = req;
 
@@ -36,4 +54,5 @@ function getIssues(req, res, next) {
 }
 
 exports.createIssue = createIssue;
+exports.deleteIssue = deleteIssue;
 exports.getIssues = getIssues;

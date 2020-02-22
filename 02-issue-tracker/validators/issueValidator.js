@@ -3,6 +3,7 @@
 const {body} = require('express-validator');
 const {createErrorMessage} = require('../helpers/errorHelper');
 
+const MISSING_ID_ERROR = 'Id error';
 const MISSING_REQUIRED_FIELD_ERROR = 'Missing required field';
 
 const createIssueValidator = [
@@ -13,4 +14,11 @@ const createIssueValidator = [
             createErrorMessage(MISSING_REQUIRED_FIELD_ERROR, path))
 ];
 
-module.exports = {createIssueValidator};
+const deleteIssueValidator = [
+    body(['_id'])
+        .not()
+        .isEmpty()
+        .withMessage(MISSING_ID_ERROR)
+];
+
+module.exports = {createIssueValidator, deleteIssueValidator};
