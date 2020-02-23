@@ -25,8 +25,8 @@ const TEST_ISSUE = {
 chai.use(chaiHttp);
 
 suite('Functional Tests', () => {
-    beforeEach(() => {
-      deleteIssue({project: TEST_PROJECT_TITLE}, () => {});
+    beforeEach((done) => {
+      deleteIssue({project: TEST_PROJECT_TITLE}, () => done());
     });
 
     suite('POST /api/issues/{project} => object with issue data', () => {
