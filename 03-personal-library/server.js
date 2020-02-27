@@ -1,5 +1,7 @@
 'use strict';
 
+require('dotenv').config();
+
 const PORT = process.env.PORT || 3000;
 const express     = require('express');
 const bodyParser  = require('body-parser');
@@ -17,7 +19,7 @@ app.use(helmet.hidePoweredBy({setTo: 'PHP 4.2.0'}));
 
 app.use('/public', express.static(process.cwd() + '/public'));
 
-app.use(cors({origin: '*'})); //USED FOR FCC TESTING PURPOSES ONLY!
+app.use(cors({origin: '*'}));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -54,4 +56,4 @@ app.listen(PORT, function () {
   }
 });
 
-module.exports = app; //for unit/functional testing
+module.exports = app;

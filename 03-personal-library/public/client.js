@@ -2,21 +2,7 @@ $( document ).ready(function() {
   var items = [];
   var itemsRaw = [];
   
-  $.getJSON('/api/books', function(data) {
-    //var items = [];
-    itemsRaw = data;
-    $.each(data, function(i, val) {
-      items.push('<li class="bookItem" id="' + i + '">' + val.title + ' - ' + val.commentcount + ' comments</li>');
-      return ( i !== 14 );
-    });
-    if (items.length >= 15) {
-      items.push('<p>...and '+ (data.length - 15)+' more!</p>');
-    }
-    $('<ul/>', {
-      'class': 'listWrapper',
-      html: items.join('')
-      }).appendTo('#display');
-  });
+  refreshBooks();
   
   var comments = [];
   $('#display').on('click','li.bookItem',function() {
@@ -38,7 +24,6 @@ $( document ).ready(function() {
       url: '/api/books/'+this.id,
       type: 'delete',
       success: function(data) {
-        //update list
         $('#detailComments').html('<p style="color: red;">'+data+'<p><p>Refresh the page</p>');
       }
     });
@@ -52,21 +37,21 @@ $( document ).ready(function() {
       dataType: 'json',
       data: $('#newCommentForm').serialize(),
       success: function(data) {
-        comments.unshift(newComment); //adds new comment to top of list
+        comments.unshift(newComment);
         $('#detailComments').html(comments.join(''));
       }
     });
   });
   
-  $('#newBook').click(function() {
+  $('#newBook').click(function(event) {
+    event.preventDefault();
+
     $.ajax({
       url: '/api/books',
       type: 'post',
       dataType: 'json',
       data: $('#newBookForm').serialize(),
-      success: function(data) {
-        //update list
-      }
+      success: refreshBooks
     });
   });
   
@@ -74,12 +59,38 @@ $( document ).ready(function() {
     $.ajax({
       url: '/api/books',
       type: 'delete',
-      dataType: 'json',
-      data: $('#newBookForm').serialize(),
-      success: function(data) {
-        //update list
-      }
+      dataType: 'text',
+      success: refreshBooks
     });
-  }); 
-  
+  });
+
+  function refreshBooks() {
+    $.getJSON('/api/books', function(data) {
+      _resetView();
+
+      if(!data.length) {
+        return;
+      }
+
+      itemsRaw = data;
+      $.each(data, function(i, val) {
+        items.push('<li class="bookItem" id="' + i + '">' + val.title + ' - ' + val.commentcount + ' comments</li>');
+        return ( i !== 14 );
+      });
+      if (items.length >= 15) {
+        items.push('<p>...and '+ (data.length - 15)+' more!</p>');
+      }
+      $('<ul/>', {
+        'class': 'listWrapper',
+        html: items.join('')
+        }).appendTo('#display');
+    });
+
+    function _resetView() {
+      items = [];
+
+      $('#display').empty();
+      $('#bookTitleToAdd').val('');
+    }
+  }
 });
