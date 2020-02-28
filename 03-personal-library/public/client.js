@@ -3,19 +3,21 @@ $( document ).ready(function() {
   var itemsRaw = [];
   
   refreshBooks();
-  
-  var comments = [];
+
   $('#display').on('click','li.bookItem',function() {
     $("#detailTitle").html('<b>'+itemsRaw[this.id].title+'</b> (id: '+itemsRaw[this.id]._id+')');
     $.getJSON('/api/books/'+itemsRaw[this.id]._id, function(data) {
-      comments = [];
-      $.each(data.comments, function(i, val) {
-        comments.push('<li>' +val+ '</li>');
-      });
-      comments.push('<br><form id="newCommentForm"><input style="width:300px" type="text" class="form-control" id="commentToAdd" name="comment" placeholder="New Comment"></form>');
-      comments.push('<br><button class="btn btn-info addComment" id="'+ data._id+'">Add Comment</button>');
-      comments.push('<button class="btn btn-danger deleteBook" id="'+ data._id+'">Delete Book</button>');
-      $('#detailComments').html(comments.join(''));
+      let bookDetails = '';
+
+      _refreshComments(data);
+      bookDetails =
+        `<br>
+          <form id="newCommentForm">
+            <input style="width:300px" type="text" class="form-control" id="commentToAdd" name="comment" placeholder="New Comment">
+            <br><button class="btn btn-info addComment" type="submit" id="${data._id}">Add Comment</button>
+            <button class="btn btn-danger deleteBook" type="button" id="${data._id}">Delete Book</button>
+          </form>`;
+      $('#commentsControls').html(bookDetails);
     });
   });
   
@@ -24,22 +26,20 @@ $( document ).ready(function() {
       url: '/api/books/'+this.id,
       type: 'delete',
       success: function(data) {
-        $('#detailComments').html('<p style="color: red;">'+data+'<p><p>Refresh the page</p>');
+        $('#comments').html('<p style="color: red;">'+data+'<p><p>Refresh the page</p>');
       }
     });
   });  
   
-  $('#bookDetail').on('click','button.addComment',function() {
-    var newComment = $('#commentToAdd').val();
+  $('#bookDetail').on('click','button.addComment', function(event) {
+    event.preventDefault();
+
     $.ajax({
-      url: '/api/books/'+this.id,
+      url: `/api/books/${this.id}`,
       type: 'post',
       dataType: 'json',
       data: $('#newCommentForm').serialize(),
-      success: function(data) {
-        comments.unshift(newComment);
-        $('#detailComments').html(comments.join(''));
-      }
+      success: _refreshComments
     });
   });
   
@@ -92,5 +92,15 @@ $( document ).ready(function() {
       $('#display').empty();
       $('#bookTitleToAdd').val('');
     }
+  }
+
+  function _refreshComments({comments}) {
+    const commentsList = [];
+
+    $.each(comments, function(_, val) {
+      commentsList.push('<li>' +val+ '</li>');
+    });
+    $('#commentToAdd').val('');
+    $('#commentsList').empty().html(commentsList.join(''));
   }
 });

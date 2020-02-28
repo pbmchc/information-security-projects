@@ -4,13 +4,14 @@ const expect = require('chai').expect;
 const mongoose = require('mongoose');
 
 const bookController = require('../controllers/bookController');
-const {createBookValidator} = require('../validators/bookValidator');
+const {createBookValidator, updateBookCommentsValidator} = require('../validators/bookValidator');
 
 mongoose.connect(
   process.env.DB,
   {
     useNewUrlParser: true,
-    useCreateIndex: true
+    useCreateIndex: true,
+    useFindAndModify: false
   }
 );
 
@@ -22,11 +23,7 @@ module.exports = function (app) {
 
   app.route('/api/books/:id')
     .get(bookController.getSingleBook)
-    .post(function(req, res){
-      var bookid = req.params.id;
-      var comment = req.body.comment;
-      //json res format same as .get
-    })
+    .post(updateBookCommentsValidator, bookController.updateBookComments)
     .delete(bookController.deleteBook);
   
 };

@@ -10,6 +10,7 @@ const DELETING_BOOK_SUCCESS_MESSAGE = 'Delete successful';
 const DELETING_BOOK_ERROR_MESSAGE = 'Error while deleting book';
 const DELETING_BOOKS_ERROR_MESSAGE = 'Error while deleting books';
 const DELETING_BOOKS_SUCCESS_MESSAGE = 'Complete delete successful';
+const UPDATING_BOOK_COMMENTS_ERROR_MESSAGE = 'Error while updating comments';
 
 function createBook(book, done) {
     const newBook = new Book(book);
@@ -47,6 +48,16 @@ function deleteBook({id}, done) {
     );
 }
 
+function updateBookComments({id}, {comment}, done) {
+    Book.findByIdAndUpdate(id, {$push: {comments: comment}}, {new: true}, (err, result) => {
+        if(err) {
+            return done({msg: UPDATING_BOOK_COMMENTS_ERROR_MESSAGE});
+        }
+
+        done(null, _mapSingleBook(result));
+    });
+}
+
 function getBooks(done) {
     Book.find({}, (err, result) => {
         if(err) {
@@ -63,10 +74,11 @@ function deleteBooks(done) {
             : done(null, DELETING_BOOKS_SUCCESS_MESSAGE));
 }
 
-function _mapSingleBook({_id, title}) {
+function _mapSingleBook({_id, title, comments}) {
     return ({
         _id,
-        title
+        title,
+        comments
     });
 }
 
@@ -81,5 +93,6 @@ function _mapBooks({_id, title, comments}) {
 exports.createBook = createBook;
 exports.getBookById = getBookById;
 exports.deleteBook = deleteBook;
+exports.updateBookComments = updateBookComments;
 exports.getBooks = getBooks;
 exports.deleteBooks = deleteBooks;

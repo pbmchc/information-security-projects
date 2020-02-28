@@ -43,6 +43,23 @@ function deleteBook({params}, res, next) {
     });
 }
 
+function updateBookComments(req, res, next) {
+    const {body, params} = req;
+    const {errors: [err]} = validationResult(req);
+
+    if(err) {
+        return next(prepareErrorPayload(err.msg));
+    }
+
+    bookRepository.updateBookComments(params, body, (err, result) => {
+        if(err) {
+            return next(prepareErrorPayload(err.msg));
+        }
+
+        res.json(result);
+    });
+}
+
 function getBooks(_, res, next) {
     bookRepository.getBooks((err, result) => {
         if(err) {
@@ -66,5 +83,6 @@ function deleteBooks(_, res, next) {
 exports.addBook = addBook;
 exports.getSingleBook = getSingleBook;
 exports.deleteBook = deleteBook;
+exports.updateBookComments = updateBookComments;
 exports.getBooks = getBooks;
 exports.deleteBooks = deleteBooks;
