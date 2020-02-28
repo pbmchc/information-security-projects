@@ -6,6 +6,8 @@ const SAVING_BOOK_ERROR_MESSAGE = 'Error while saving book';
 const FETCHING_BOOKS_ERROR_MESSAGE = 'Error while fetching books';
 const FETCHING_BOOK_ERROR_MESSAGE = 'Error while fetching book';
 const FETCHING_BOOK_MISSING_MESSAGE = 'No book exists';
+const DELETING_BOOK_SUCCESS_MESSAGE = 'Delete successful';
+const DELETING_BOOK_ERROR_MESSAGE = 'Error while deleting book';
 const DELETING_BOOKS_ERROR_MESSAGE = 'Error while deleting books';
 const DELETING_BOOKS_SUCCESS_MESSAGE = 'Complete delete successful';
 
@@ -35,6 +37,14 @@ function getBookById(id, done) {
             done(null, _mapSingleBook(result));
         });
     });
+}
+
+function deleteBook({id}, done) {
+    Book.deleteOne({_id: id}, err =>
+        err
+            ? done({msg: DELETING_BOOK_ERROR_MESSAGE})
+            : done(null, DELETING_BOOK_SUCCESS_MESSAGE)
+    );
 }
 
 function getBooks(done) {
@@ -70,5 +80,6 @@ function _mapBooks({_id, title, comments}) {
 
 exports.createBook = createBook;
 exports.getBookById = getBookById;
+exports.deleteBook = deleteBook;
 exports.getBooks = getBooks;
 exports.deleteBooks = deleteBooks;

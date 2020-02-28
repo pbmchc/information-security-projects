@@ -33,6 +33,16 @@ function getSingleBook({params}, res, next) {
     });
 }
 
+function deleteBook({params}, res, next) {
+    bookRepository.deleteBook(params, (err, result) => {
+        if(err) {
+            return next(prepareErrorPayload(err.msg));
+        }
+
+        res.send(result);
+    });
+}
+
 function getBooks(_, res, next) {
     bookRepository.getBooks((err, result) => {
         if(err) {
@@ -55,5 +65,6 @@ function deleteBooks(_, res, next) {
 
 exports.addBook = addBook;
 exports.getSingleBook = getSingleBook;
+exports.deleteBook = deleteBook;
 exports.getBooks = getBooks;
 exports.deleteBooks = deleteBooks;

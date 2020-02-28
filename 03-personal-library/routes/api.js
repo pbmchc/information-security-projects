@@ -27,10 +27,6 @@ module.exports = function (app) {
       var comment = req.body.comment;
       //json res format same as .get
     })
-    
-    .delete(function(req, res){
-      var bookid = req.params.id;
-      //if successful response will be 'delete successful'
-    });
+    .delete(bookController.deleteBook);
   
 };
