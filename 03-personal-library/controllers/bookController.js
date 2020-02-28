@@ -21,6 +21,18 @@ function addBook(req, res, next) {
     });
 }
 
+function getSingleBook({params}, res, next) {
+    const {id} = params;
+
+    bookRepository.getBookById(id, (err, result) => {
+        if(err) {
+            return next(prepareErrorPayload(err.msg));
+        }
+
+        res.json(result);
+    });
+}
+
 function getBooks(_, res, next) {
     bookRepository.getBooks((err, result) => {
         if(err) {
@@ -42,5 +54,6 @@ function deleteBooks(_, res, next) {
 }
 
 exports.addBook = addBook;
+exports.getSingleBook = getSingleBook;
 exports.getBooks = getBooks;
 exports.deleteBooks = deleteBooks;

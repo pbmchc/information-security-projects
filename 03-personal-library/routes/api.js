@@ -15,20 +15,13 @@ mongoose.connect(
 );
 
 module.exports = function (app) {
-
   app.route('/api/books')
     .get(bookController.getBooks)
     .post(createBookValidator, bookController.addBook)
     .delete(bookController.deleteBooks);
 
-
-
   app.route('/api/books/:id')
-    .get(function (req, res){
-      var bookid = req.params.id;
-      //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
-    })
-    
+    .get(bookController.getSingleBook)
     .post(function(req, res){
       var bookid = req.params.id;
       var comment = req.body.comment;
