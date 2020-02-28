@@ -1,10 +1,16 @@
 'use strict';
 
-const bookRepository = require('../repositories/bookRepository');
+const {validationResult} = require('express-validator');
 const {prepareErrorPayload} = require('../helpers/errorHelper');
+const bookRepository = require('../repositories/bookRepository');
 
 function addBook(req, res, next) {
     const {body} = req;
+    const {errors: [err]} = validationResult(req);
+
+    if(err) {
+        return next(prepareErrorPayload(err.msg));
+    }
 
     bookRepository.createBook(body, (err, result) => {
         if(err) {
