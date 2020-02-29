@@ -5,6 +5,7 @@
 	"main": "server.js",
 	"scripts": {
 		"start": "node server.js",
+		"test": "env NODE_ENV=test nodemon server.js",
 		"watch": "nodemon server.js"
 	},
 	"dependencies": {

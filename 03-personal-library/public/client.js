@@ -60,7 +60,10 @@ $( document ).ready(function() {
       url: '/api/books',
       type: 'delete',
       dataType: 'text',
-      success: refreshBooks
+      success: () => {
+        resetBookDetails();
+        refreshBooks();
+      }
     });
   });
 
@@ -101,6 +104,15 @@ $( document ).ready(function() {
       commentsList.push('<li>' +val+ '</li>');
     });
     $('#commentToAdd').val('');
-    $('#commentsList').empty().html(commentsList.join(''));
+    $('#commentsList').html(commentsList.join(''));
+  }
+
+  function resetBookDetails() {
+    const initialBookDetails = `
+      <p id='detailTitle'>
+        Select a book to see it's details and comments
+      </p>`;
+    
+    $('#bookDetail').html(initialBookDetails);
   }
 });
