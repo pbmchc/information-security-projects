@@ -13,6 +13,13 @@ const runner            = require('./test-runner');
 
 const app = express();
 
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self'"],
+    styleSrc: ["'self'"]
+  }
+}));
+
 app.use('/public', express.static(process.cwd() + '/public'));
 
 app.use(cors({origin: '*'}));
@@ -51,8 +58,8 @@ app.use((err, req, res, next) => {
   res.status(errCode).type('txt').send(errMessage);
 });
 
-app.listen(process.env.PORT || 3000, function () {
-  console.log("Listening on port " + process.env.PORT);
+app.listen(PORT, function () {
+  console.log(`Listening on port: ${PORT}`);
   if(process.env.NODE_ENV==='test') {
     console.log('Running Tests...');
     setTimeout(function () {
