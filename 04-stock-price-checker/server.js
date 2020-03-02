@@ -1,5 +1,7 @@
 'use strict';
 
+require('dotenv').config();
+
 const PORT = process.env.PORT || 3000;
 const express     = require('express');
 const bodyParser  = require('body-parser');
@@ -16,6 +18,7 @@ const app = express();
 app.use(helmet.contentSecurityPolicy({
   directives: {
     defaultSrc: ["'self'"],
+    scriptSrc: ["'self'", "code.jquery.com"],
     styleSrc: ["'self'"]
   }
 }));
