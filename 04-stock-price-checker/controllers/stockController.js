@@ -1,18 +1,21 @@
 const request = require('request-promise');
 
 const {prepareErrorPayload} = require('../helpers/errorHelper');
+const {validateStockRecords} = require('../validators/stockValidator');
 
 const STOCK_FETCHING_ERROR = 'Error while fetching stock';
-const STOCK_UNKNOWN_SYMBOL_ERROR = 'Unknown symbol';
 
 async function getStock(req, res, next) {
     const {query: {stock}} = req;
     const tickers = Array.isArray(stock) ? stock : [stock];
 
     try {
-        const records = await Promise.all(
-            tickers.map(ticker => request(_getStockRequestUrl(ticker)))
-        );
+        const records = await Promise.all(tickers.map(ticker => request(_getStockRequestUrl(ticker))));
+        const validationError = validateStockRecords(records, tickers);
+
+        if(validationError) {
+            return next(prepareErrorPayload(validationError));
+        }
 
         res.json(_prepareStockData(records));
     } catch(err) {
@@ -23,14 +26,18 @@ async function getStock(req, res, next) {
 function _prepareStockData(records) {
     if(records.length > 1) {
         return {
-            stockData: records.map(record => ({
-                ..._prepareBaseStockData(record),
-                rel_likes: 0
-            }))
+            stockData: records.map(_prepareStockRecord)
         };
     }
 
     return _prepareSingleStockRecord(records);
+}
+
+function _prepareStockRecord(record) {
+    return {
+        ..._prepareBaseStockData(record),
+        rel_likes: 0
+    };
 }
 
 function _prepareSingleStockRecord([record]) {
