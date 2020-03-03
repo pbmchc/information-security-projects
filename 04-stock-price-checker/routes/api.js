@@ -1,11 +1,17 @@
 'use strict';
 
-var expect = require('chai').expect;
-var MongoClient = require('mongodb');
+const mongoose = require('mongoose');
 
-const stockController = require('../controllers/stockController'); 
+const stockController = require('../controllers/stockController');
 
-const CONNECTION_STRING = process.env.DB;
+mongoose.connect(
+  process.env.DB,
+  {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false
+  }
+);
 
 module.exports = function (app) {
   app.route('/api/stock-prices')
