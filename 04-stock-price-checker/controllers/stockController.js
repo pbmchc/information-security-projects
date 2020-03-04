@@ -18,38 +18,46 @@ async function getStock({connection, query: {stock, like}}, res, next) {
             return next(prepareErrorPayload(validationError));
         }
 
-        _prepareStockData(records, ip, res, next);
+        _sendStockData(records, ip, res, next);
     } catch(err) {
         next(prepareErrorPayload(STOCK_FETCHING_ERROR));
     }
 }
 
-function _prepareStockData(records, ip, res, next) {
-    if(records.length > 1) {
-        return {
-            stockData: records.map(_prepareStockRecord)
-        };
-    }
+async function _sendStockData(records, ip, res, next) {
+    const stockData = records.length > 1
+        ? await _getMultipleStockRecords(records, ip, next)
+        : await _getSingleStockRecord(records[0], ip, next);
 
-    return _getSingleStockRecord(records, ip, res, next);
+    res.json(stockData);
 }
 
-function _prepareStockRecord(record) {
-    const {symbol: stock, latestPrice: price} = JSON.parse(record);
+async function _getMultipleStockRecords(records, ip, next) {
+    const stockRecords = await Promise.all(records.map(record => _getSingleStockRecord(record, ip, next)));
 
     return {
-        stock,
-        price,
-        rel_likes: 0
+        stockData: _prepareMultipleStockData(stockRecords)
     };
 }
 
-async function _getSingleStockRecord([record], ip, res, next) {
+async function _getSingleStockRecord(record, ip, next) {
     try {
-        res.json(await _prepareSingleStockData(record, ip));
+        return _prepareSingleStockData(record, ip);
     } catch(err) {
         next(prepareErrorPayload(err))
     }
+}
+
+function _prepareMultipleStockData(stockRecords) {
+    return stockRecords.map(({stockData: {stock, price, likes}}, index, arr)=> {
+        const {stockData: {likes: otherStockLikes}} = index ? arr[0] : arr[1];
+
+        return {
+            stock,
+            price,
+            rel_likes: likes - otherStockLikes
+        };
+    });
 }
 
 async function _prepareSingleStockData(record, ip) {
