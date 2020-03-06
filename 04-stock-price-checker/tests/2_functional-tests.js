@@ -3,30 +3,69 @@ const chai = require('chai');
 const assert = chai.assert;
 const server = require('../server');
 
+const Ticker = require('../models/ticker');
+
 chai.use(chaiHttp);
 
-suite('Functional Tests', function() {
-    
-    suite('GET /api/stock-prices => stockData object', function() {
-      
-      test('1 stock', function(done) {
+suite('Functional Tests', () => {
+    suite('GET /api/stock-prices => stockData object', () => {
+      const STOCK = 'goog';
+      const clearTestCollection = (done) => Ticker.deleteMany({}).then(() => done());
+
+      before((done) => {
+        clearTestCollection(done);
+      });
+
+      after((done) => {
+        clearTestCollection(done);
+      });
+
+      test('1 stock', (done) => {
        chai.request(server)
         .get('/api/stock-prices')
-        .query({stock: 'goog'})
-        .end(function(err, res){
-          
-          //complete this one too
-          
+        .query({stock: STOCK})
+        .end((_, {body, status}) => {
+          const {stockData: {stock, price, likes}} = body;
+
+          assert.equal(status, 200);
+          assert.equal(stock, STOCK.toUpperCase());
+          assert.isNumber(price);
+          assert.isNumber(likes);
+          assert.equal(likes, 0);
           done();
         });
       });
       
-      test('1 stock with like', function(done) {
-        
+      test('1 stock with like', (done) => {
+        chai.request(server)
+          .get('/api/stock-prices')
+          .query({stock: STOCK, like: true})
+          .end((_, {body, status}) => {
+            const {stockData: {stock, price, likes}} = body;
+
+            assert.equal(status, 200);
+            assert.equal(stock, STOCK.toUpperCase());
+            assert.isNumber(price);
+            assert.isNumber(likes);
+            assert.equal(likes, 1);
+            done();
+          });
       });
       
-      test('1 stock with like again (ensure likes arent double counted)', function(done) {
-        
+      test('1 stock with like again (ensure likes aren\'t double counted)', (done) => {
+        chai.request(server)
+          .get('/api/stock-prices')
+          .query({stock: STOCK, like: true})
+          .end((_, {body, status}) => {
+            const {stockData: {stock, price, likes}} = body;
+
+            assert.equal(status, 200);
+            assert.equal(stock, STOCK.toUpperCase());
+            assert.isNumber(price);
+            assert.isNumber(likes);
+            assert.equal(likes, 1);
+            done();
+          });
       });
       
       test('2 stocks', function(done) {
@@ -36,7 +75,5 @@ suite('Functional Tests', function() {
       test('2 stocks with like', function(done) {
         
       });
-      
     });
-
 });
