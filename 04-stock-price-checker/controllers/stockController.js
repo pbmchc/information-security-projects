@@ -2,13 +2,13 @@ const request = require('request-promise');
 
 const stockRepository = require('../repositories/stockRepository');
 const {prepareErrorPayload} = require('../helpers/errorHelper');
-const {parseStringifiedBoolean} = require('../utils/booleanUtils');
 const {validateStockRecords} = require('../validators/stockValidator');
+const {mapToBoolean} = require('../utils/booleanUtils');
 
 const STOCK_FETCHING_ERROR = 'Error while fetching stock';
 
 async function getStock({connection, query: {stock, like}}, res, next) {
-    const ip = parseStringifiedBoolean(like) ? connection.remoteAddress : null;
+    const ip = mapToBoolean(like) ? connection.remoteAddress : null;
     const tickers = Array.isArray(stock) ? stock : [stock];
 
     try {
