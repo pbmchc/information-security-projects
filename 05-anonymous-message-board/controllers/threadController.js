@@ -4,6 +4,8 @@ const threadRepository = require('../repositories/threadRepository');
 const {prepareErrorPayload} = require('../helpers/errorHelper');
 const {encrypt} = require('../helpers/encryptHelper');
 
+const DEFAULT_SUCCESS_MESSAGE = 'success';
+
 async function createThread(req, res, next) {
     const {body, params: {board}} = req;
 
@@ -42,6 +44,17 @@ async function getSingleThread(req, res, next) {
     }
 }
 
+async function deleteThread(req, res, next) {
+    const {body} = req;
+
+    try {
+        await threadRepository.deleteThread(body);
+        res.send(DEFAULT_SUCCESS_MESSAGE);
+    } catch(err) {
+        next(prepareErrorPayload(err.msg));
+    }
+}
+
 async function _buildReply(reply) {
     return {
         ...reply,
@@ -63,4 +76,5 @@ function _encryptDeletePassword({delete_password}) {
 
 exports.createThread = createThread;
 exports.getSingleThread = getSingleThread;
+exports.deleteThread = deleteThread;
 exports.createThreadReply = createThreadReply;

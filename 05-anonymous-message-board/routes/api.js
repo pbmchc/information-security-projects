@@ -8,13 +8,15 @@ mongoose.connect(
   process.env.DB,
   {
     useNewUrlParser: true,
-    useCreateIndex: true
+    useCreateIndex: true,
+    useFindAndModify: false
   }
 );
 
 module.exports = function (app) {
   app.route('/api/threads/:board')
-    .post(threadController.createThread);
+    .post(threadController.createThread)
+    .delete(threadController.deleteThread);
   app.route('/api/replies/:board')
     .get(threadController.getSingleThread)
     .post(threadController.createThreadReply);
