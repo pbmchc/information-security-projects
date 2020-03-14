@@ -2,6 +2,8 @@
 
 const mongoose = require('mongoose');
 
+const replySchema = require('./reply');
+
 const Schema = mongoose.Schema;
 const threadSchema = new Schema({
     board: {
@@ -26,7 +28,7 @@ const threadSchema = new Schema({
         default: Date.now()
     },
     replies: {
-        type: [String],
+        type: [replySchema],
         default: []
     }
 });
