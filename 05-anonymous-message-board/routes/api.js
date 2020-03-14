@@ -16,5 +16,6 @@ module.exports = function (app) {
   app.route('/api/threads/:board')
     .post(threadController.createThread);
   app.route('/api/replies/:board')
+    .get(threadController.getSingleThread)
     .post(threadController.createThreadReply);
 };

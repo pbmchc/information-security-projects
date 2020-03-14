@@ -32,6 +32,16 @@ async function createThreadReply(req, res, next) {
     }
 }
 
+async function getSingleThread(req, res, next) {
+    const {query: {thread_id}} = req;
+
+    try {
+        res.json(await threadRepository.getSingleThread(thread_id));
+    } catch(err) {
+        next(prepareErrorPayload(err.msg));
+    }
+}
+
 async function _buildReply(reply) {
     return {
         ...reply,
@@ -52,4 +62,5 @@ function _encryptDeletePassword({delete_password}) {
 }
 
 exports.createThread = createThread;
+exports.getSingleThread = getSingleThread;
 exports.createThreadReply = createThreadReply;
