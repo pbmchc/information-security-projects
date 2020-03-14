@@ -50,6 +50,22 @@ app.use(function(req, res, next) {
     .send('Not Found');
 });
 
+app.use((err, req, res, next) => {
+  let errCode, errMessage;
+
+  if (err.errors) {
+    errCode = 400;
+    const keys = Object.keys(err.errors);
+
+    errMessage = err.errors[keys[0]].message;
+  } else {
+    errCode = err.status || 500;
+    errMessage = err.message || 'Internal Server Error';
+  }
+
+  res.status(errCode).type('txt').send(errMessage);
+});
+
 app.listen(PORT, function () {
   console.log(`Listening on port ${PORT}`);
   if(process.env.NODE_ENV==='test') {
