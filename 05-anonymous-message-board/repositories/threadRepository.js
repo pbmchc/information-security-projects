@@ -35,7 +35,9 @@ async function createThread(data) {
 
 async function getSingleThread(id) {
     try {
-        return await Thread.findById(id).select(THREAD_EXCLUDED_FIELDS).lean();
+        const thread = await Thread.findById(id).select(THREAD_EXCLUDED_FIELDS).lean();
+
+        return await _sortThreadReplies(thread);
     } catch(err) {
         return Promise.reject({msg: FETCHING_THREAD_ERROR_MESSAGE(id)});
     }
@@ -117,13 +119,20 @@ async function deleteThreadReply({delete_password, reply_id, thread_id}) {
     }
 }
 
-function _mapToRelatedThreadDetails({replies, ...thread}) {
+function _mapToRelatedThreadDetails(thread) {
+    const {replies, ...details} = _sortThreadReplies(thread);
+
+    return {
+        ...details,
+        replycount: replies.length,
+        replies: replies.slice(0, THREAD_REPLY_FETCH_CONFIG.LIMIT)
+    };
+}
+
+function _sortThreadReplies({replies, ...thread}) {
     return {
         ...thread,
-        replycount: replies.length,
-        replies: replies
-            .sort((replyA, replyB) => replyB.created_on - replyA.created_on)
-            .slice(0, THREAD_REPLY_FETCH_CONFIG.LIMIT)
+        replies: replies.sort((replyA, replyB) => replyB.created_on - replyA.created_on)
     };
 }
 
