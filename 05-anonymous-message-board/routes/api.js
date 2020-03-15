@@ -15,6 +15,7 @@ mongoose.connect(
 
 module.exports = function (app) {
   app.route('/api/threads/:board')
+    .get(threadController.getRelatedThreads)
     .post(threadController.createThread)
     .put(threadController.reportThread)
     .delete(threadController.deleteThread);

@@ -30,6 +30,16 @@ async function getSingleThread(req, res, next) {
     }
 }
 
+async function getRelatedThreads(req, res, next) {
+    const {params: {board}} = req;
+
+    try {
+        res.json(await threadRepository.getRelatedThreads(board));
+    } catch(err) {
+        next(prepareErrorPayload(err.msg));
+    }
+}
+
 async function reportThread(req, res, next) {
     const {body: {report_id}} = req;
 
@@ -109,6 +119,7 @@ function _encryptDeletePassword({delete_password}) {
 
 exports.createThread = createThread;
 exports.getSingleThread = getSingleThread;
+exports.getRelatedThreads = getRelatedThreads;
 exports.reportThread = reportThread;
 exports.deleteThread = deleteThread;
 exports.createThreadReply = createThreadReply;

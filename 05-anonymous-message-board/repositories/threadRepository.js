@@ -7,11 +7,21 @@ const DELETED_THREAD_REPLY_TEXT = '[deleted]';
 const CREATING_THREAD_ERROR_MESSAGE = 'Error while creating thread';
 const CREATING_THREAD_REPLY_ERROR_MESSAGE = 'Error while saving reply';
 const FETCHING_THREAD_ERROR_MESSAGE = (id) => `Error while fetching thread ${id}`;
+const FETCHING_THREADS_ERROR_MESSAGE = 'Error while fetching threads';
 const DELETING_THREAD_ERROR_MESSAGE = 'Error while deleting thread';
 const DELETING_THREAD_REPLY_ERROR_MESSAGE = 'Error while deleting thread reply';
 const REPORTING_THREAD_ERROR_MESSAGE = 'Error while reporting thread';
 const REPORTING_THREAD_REPLY_ERROR_MESSAGE = 'Error while reporting thread reply';
 const INCORRECT_PASSWORD_ERROR_MESSAGE = 'Incorrect password';
+const THREAD_FETCH_CONFIG = {LIMIT: 10, SORT: {bumped_on: 'desc'}};
+const THREAD_REPLY_FETCH_CONFIG = {LIMIT: 3};
+const THREAD_EXCLUDED_FIELDS = {
+    board: 0,
+    ..._getExcludedCommonFieldsSelectors(
+        'delete_password',
+        'reported'
+    )
+};
 
 async function createThread(data) {
     const thread = new Thread(data);
@@ -25,11 +35,23 @@ async function createThread(data) {
 
 async function getSingleThread(id) {
     try {
-        const {delete_password, reported, ...thread} = await Thread.findById(id).lean();
-
-        return thread;
+        return await Thread.findById(id).select(THREAD_EXCLUDED_FIELDS).lean();
     } catch(err) {
         return Promise.reject({msg: FETCHING_THREAD_ERROR_MESSAGE(id)});
+    }
+}
+
+async function getRelatedThreads(board) {
+    try {
+        const threads = await Thread
+            .find({board})
+            .sort(THREAD_FETCH_CONFIG.SORT)
+            .limit(THREAD_FETCH_CONFIG.LIMIT)
+            .lean();
+        
+        return threads.map(_mapToRelatedThreadDetails);
+    } catch(err) {
+        return Promise.reject({msg: FETCHING_THREADS_ERROR_MESSAGE});
     }
 }
 
@@ -95,8 +117,27 @@ async function deleteThreadReply({delete_password, reply_id, thread_id}) {
     }
 }
 
+function _mapToRelatedThreadDetails({replies, ...thread}) {
+    return {
+        ...thread,
+        replycount: replies.length,
+        replies: replies
+            .sort((replyA, replyB) => replyB.created_on - replyA.created_on)
+            .slice(0, THREAD_REPLY_FETCH_CONFIG.LIMIT)
+    };
+}
+
+function _getExcludedCommonFieldsSelectors(...fields) {
+    return fields.reduce((selectors, field) => ({
+        ...selectors,
+        [field]: 0,
+        [`replies.${field}`]: 0
+    }), {});
+}
+
 exports.createThread = createThread;
 exports.getSingleThread = getSingleThread;
+exports.getRelatedThreads = getRelatedThreads;
 exports.reportThread = reportThread;
 exports.deleteThread = deleteThread;
 exports.createThreadReply = createThreadReply;
