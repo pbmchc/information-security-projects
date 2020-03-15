@@ -16,7 +16,10 @@ const replySchema = new Schema({
         type: Date,
         default: Date.now()
     },
-    reported: Boolean
+    reported: {
+        type: Boolean,
+        default: false
+    }
 });
 
 module.exports = replySchema;

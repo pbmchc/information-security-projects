@@ -18,7 +18,10 @@ const threadSchema = new Schema({
         type: String,
         required: true
     },
-    reported: Boolean,
+    reported: {
+        type: Boolean,
+        default: false
+    },
     created_on: {
         type: Date,
         default: Date.now()

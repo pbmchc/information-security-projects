@@ -9,6 +9,7 @@ const CREATING_THREAD_REPLY_ERROR_MESSAGE = 'Error while saving reply';
 const FETCHING_THREAD_ERROR_MESSAGE = (id) => `Error while fetching thread ${id}`;
 const DELETING_THREAD_ERROR_MESSAGE = 'Error while deleting thread';
 const DELETING_THREAD_REPLY_ERROR_MESSAGE = 'Error while deleting thread reply';
+const REPORTING_THREAD_ERROR_MESSAGE = 'Error while reporting thread';
 const INCORRECT_PASSWORD_ERROR_MESSAGE = 'Incorrect password';
 
 async function createThread(data) {
@@ -28,6 +29,14 @@ async function getSingleThread(id) {
         return thread;
     } catch(err) {
         return Promise.reject({msg: FETCHING_THREAD_ERROR_MESSAGE(id)});
+    }
+}
+
+async function reportThread(id) {
+    try {
+        return Thread.findByIdAndUpdate(id, {reported: true});
+    } catch(err) {
+        return Promise.reject({msg: REPORTING_THREAD_ERROR_MESSAGE});
     }
 }
 
@@ -74,6 +83,7 @@ async function deleteThreadReply({delete_password, reply_id, thread_id}) {
 
 exports.createThread = createThread;
 exports.getSingleThread = getSingleThread;
+exports.reportThread = reportThread;
 exports.deleteThread = deleteThread;
 exports.createThreadReply = createThreadReply;
 exports.deleteThreadReply = deleteThreadReply;
