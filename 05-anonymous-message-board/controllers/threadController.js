@@ -20,20 +20,6 @@ async function createThread(req, res, next) {
     }
 }
 
-async function createThreadReply(req, res, next) {
-    const {body: {text, delete_password, thread_id}, params: {board}} = req;
-
-    try {
-        const reply = await _buildReply({text, delete_password});
-
-        await threadRepository.createThreadReply(reply, thread_id);
-
-        res.redirect(`/b/${board}/${thread_id}`);
-    } catch(err) {
-        next(prepareErrorPayload(err.msg));
-    }
-}
-
 async function getSingleThread(req, res, next) {
     const {query: {thread_id}} = req;
 
@@ -49,6 +35,31 @@ async function deleteThread(req, res, next) {
 
     try {
         await threadRepository.deleteThread(body);
+        res.send(DEFAULT_SUCCESS_MESSAGE);
+    } catch(err) {
+        next(prepareErrorPayload(err.msg));
+    }
+}
+
+async function createThreadReply(req, res, next) {
+    const {body: {text, delete_password, thread_id}, params: {board}} = req;
+
+    try {
+        const reply = await _buildReply({text, delete_password});
+
+        await threadRepository.createThreadReply(reply, thread_id);
+
+        res.redirect(`/b/${board}/${thread_id}`);
+    } catch(err) {
+        next(prepareErrorPayload(err.msg));
+    }
+}
+
+async function deleteThreadReply(req, res, next) {
+    const {body} = req;
+
+    try {
+        await threadRepository.deleteThreadReply(body);
         res.send(DEFAULT_SUCCESS_MESSAGE);
     } catch(err) {
         next(prepareErrorPayload(err.msg));
@@ -78,3 +89,4 @@ exports.createThread = createThread;
 exports.getSingleThread = getSingleThread;
 exports.deleteThread = deleteThread;
 exports.createThreadReply = createThreadReply;
+exports.deleteThreadReply = deleteThreadReply;

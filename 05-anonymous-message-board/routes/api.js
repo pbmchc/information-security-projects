@@ -19,5 +19,6 @@ module.exports = function (app) {
     .delete(threadController.deleteThread);
   app.route('/api/replies/:board')
     .get(threadController.getSingleThread)
-    .post(threadController.createThreadReply);
+    .post(threadController.createThreadReply)
+    .delete(threadController.deleteThreadReply);
 };
