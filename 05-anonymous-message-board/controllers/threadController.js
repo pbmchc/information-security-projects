@@ -66,6 +66,17 @@ async function createThreadReply(req, res, next) {
     }
 }
 
+async function reportThreadReply(req, res, next) {
+    const {body} = req;
+
+    try {
+        await threadRepository.reportThreadReply(body);
+        res.send(DEFAULT_SUCCESS_MESSAGE);
+    } catch(err) {
+        next(prepareErrorPayload(err.msg));
+    }
+}
+
 async function deleteThreadReply(req, res, next) {
     const {body} = req;
 
@@ -101,4 +112,5 @@ exports.getSingleThread = getSingleThread;
 exports.reportThread = reportThread;
 exports.deleteThread = deleteThread;
 exports.createThreadReply = createThreadReply;
+exports.reportThreadReply = reportThreadReply;
 exports.deleteThreadReply = deleteThreadReply;
