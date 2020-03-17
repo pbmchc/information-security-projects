@@ -1,13 +1,19 @@
 'use strict';
 
-const threadRepository = require('../repositories/threadRepository');
-const {prepareErrorPayload} = require('../helpers/errorHelper');
+const {validationResult} = require('express-validator');
 const {encrypt} = require('../helpers/encryptHelper');
+const {prepareErrorPayload} = require('../helpers/errorHelper');
+const threadRepository = require('../repositories/threadRepository');
 
 const DEFAULT_SUCCESS_MESSAGE = 'success';
 
 async function createThread(req, res, next) {
     const {body, params: {board}} = req;
+    const {errors: [err]} = validationResult(req);
+
+    if(err) {
+        return next(prepareErrorPayload(err.msg));
+    }
 
     try {
         const thread = await _buildThread(body, board);
@@ -64,6 +70,11 @@ async function deleteThread(req, res, next) {
 
 async function createThreadReply(req, res, next) {
     const {body: {text, delete_password, thread_id}, params: {board}} = req;
+    const {errors: [err]} = validationResult(req);
+
+    if(err) {
+        return next(prepareErrorPayload(err.msg));
+    }
 
     try {
         const reply = await _buildReply({text, delete_password});
