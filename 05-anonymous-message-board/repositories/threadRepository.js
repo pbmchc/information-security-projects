@@ -82,7 +82,7 @@ async function createThreadReply(reply, id) {
     const update = {bumped_on: Date.now(), $push: {replies: reply}};
 
     try {
-        return Thread.findByIdAndUpdate(id, update);
+        return Thread.findByIdAndUpdate(id, update, {new: true});
     } catch(err) {
         return Promise.reject({msg: CREATING_THREAD_REPLY_ERROR_MESSAGE});
     }
