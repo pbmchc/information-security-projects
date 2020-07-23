@@ -3,12 +3,15 @@ import { BRITISH_ONLY } from './british-only.js';
 import { AMERICAN_TO_BRITISH_SPELLING } from './american-to-british-spelling.js';
 import { AMERICAN_TO_BRITISH_TITLES } from './american-to-british-titles.js';
 
+const AMERICAN_ENGLISH_TIME_REGEX = /^(?:[01]{0,1}\d|2[0123]):(?:[012345]\d)$/;
+const BRITISH_ENGLISH_TIME_REGEX = /^(?:[01]{0,1}\d|2[0123])\.(?:[012345]\d)$/;
 const DEFAULT_SKIPPED_TRANSLATION_INDEX = -1;
 const TARGET_LOCALE = {
   GB: 'american-to-british',
   US: 'british-to-american'
 };
 const TRANSLATORS = [
+  translateTime,
   translateTitle,
   translateSpelling,
   translateSpecificWord,
@@ -62,6 +65,16 @@ function runTranslationPipeline(context) {
   }
 
   return result;
+}
+
+function translateTime({word}, locale) {
+  const convertToBritishTime = locale === TARGET_LOCALE.GB;
+  const [character, replacement] = convertToBritishTime ? [':', '.'] : ['.', ':'];
+  const timePattern = convertToBritishTime
+    ? AMERICAN_ENGLISH_TIME_REGEX
+    : BRITISH_ENGLISH_TIME_REGEX;
+  
+  return timePattern.test(word) ? {translation: word.replace(character, replacement)} : null;
 }
 
 function translateTitle({word}, locale) {
