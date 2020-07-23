@@ -3,8 +3,10 @@ import { BRITISH_ONLY } from './british-only.js';
 import { AMERICAN_TO_BRITISH_SPELLING } from './american-to-british-spelling.js';
 import { AMERICAN_TO_BRITISH_TITLES } from './american-to-british-titles.js';
 
-const AMERICAN_ENGLISH_TIME_REGEX = /^(?:[01]{0,1}\d|2[0123]):(?:[012345]\d)$/;
-const BRITISH_ENGLISH_TIME_REGEX = /^(?:[01]{0,1}\d|2[0123])\.(?:[012345]\d)$/;
+const AMERICAN_ENGLISH_TIME_REGEX = /(?:[01]{0,1}\d|2[0123]):(?:[012345]\d)/;
+const BRITISH_ENGLISH_TIME_REGEX = /(?:[01]{0,1}\d|2[0123])\.(?:[012345]\d)/;
+const IGNORED_CHARACTERS_REGEX = /[^\w-']/g;
+const IGNORED_CHARACTERS_TIME_REGEX = /[^\d][^\w]/g;
 const DEFAULT_SKIPPED_TRANSLATION_INDEX = -1;
 const TARGET_LOCALE = {
   GB: 'american-to-british',
@@ -74,27 +76,29 @@ function translateTime({word}, locale) {
     ? AMERICAN_ENGLISH_TIME_REGEX
     : BRITISH_ENGLISH_TIME_REGEX;
   
-  return timePattern.test(word) ? {translation: word.replace(character, replacement)} : null;
+  return timePattern.test(convertToTranslationKey(word, IGNORED_CHARACTERS_TIME_REGEX))
+    ? {translation: word.replace(character, replacement)}
+    : null;
 }
 
 function translateTitle({word}, locale) {
-  return translateWord(AMERICAN_TO_BRITISH_TITLES, word, locale);
+  return translateWord(AMERICAN_TO_BRITISH_TITLES, word.toLowerCase(), word, locale);
 }
 
 function translateSpelling({word}, locale) {
-  return translateWord(AMERICAN_TO_BRITISH_SPELLING, word, locale);
+  return translateWord(AMERICAN_TO_BRITISH_SPELLING, convertToTranslationKey(word), word, locale);
 }
 
 function translateSpecificWord({word}, locale) {
-  const key = word.toLowerCase();
+  const key = convertToTranslationKey(word);
   const dictionary = locale === TARGET_LOCALE.GB ? AMERICAN_ONLY : BRITISH_ONLY;
   const translation = dictionary[key];
 
-  return translation ? {translation} : null;
+  return translation ? {translation: formatTranslationOutput(key, word, translation)} : null;
 }
 
 function translateSpecificPhrase({word, index, wordsArray}, locale) {
-  const key = word.toLowerCase();
+  const key = convertToTranslationKey(word);
   const dictionary = locale === TARGET_LOCALE.GB ? AMERICAN_ONLY : BRITISH_ONLY;
   const phrases = Object.entries(dictionary).filter(entry => isOpeningWord(entry, key));
   const longestPhraseLength = getLongestPhraseLength(phrases);
@@ -109,7 +113,8 @@ function isOpeningWord([translationKey], key) {
 }
 
 function translateLongestPhrase(currentWord, index, wordsArray, dictionary, longestPhraseLength) {
-  let phrase = currentWord;
+  let originalPhrase = currentWord;
+  let phrase = convertToTranslationKey(currentWord);
   let result = null;
 
   for(let i = index + 1; i < index + longestPhraseLength; i++) {
@@ -119,11 +124,12 @@ function translateLongestPhrase(currentWord, index, wordsArray, dictionary, long
       continue;
     }
 
-    phrase = `${phrase} ${phrasePart}`;
+    phrase = `${phrase} ${convertToTranslationKey(phrasePart)}`;
+    originalPhrase = `${originalPhrase} ${phrasePart}`;
 
     if(dictionary[phrase]) {
       result = {
-        translation: dictionary[phrase],
+        translation: formatTranslationOutput(phrase, originalPhrase, dictionary[phrase]),
         lastWordIndex: i
       };
     }
@@ -136,25 +142,35 @@ function getLongestPhraseLength(phrases) {
   return Math.max(...phrases.map(([phrase]) => phrase.split(' ').length));
 }
 
-function translateWord(dictionary, word, locale) {
-  const key = word.toLowerCase();
-
+function translateWord(dictionary, key, word, locale) {
   if(locale === TARGET_LOCALE.GB) {
-    return dictionary[key] ? {translation: preserveWordFormatting(word, dictionary[key])} : null;
+    return dictionary[key] ? {translation: formatTranslationOutput(key, word, dictionary[key])} : null;
   }
 
   const entries = Object.entries(dictionary); 
   const entry = entries.find(([_, britishVersion]) => key === britishVersion);
 
-  return entry ? {translation: preserveWordFormatting(word, entry[0])} : null;
+  return entry ? {translation: formatTranslationOutput(key, word, entry[0])} : null;
 }
 
-function preserveWordFormatting(word, translation) {
+function formatTranslationOutput(key, word, translation) {
   if(!translation) {
     return;
   }
 
-  return `${word[0]}${translation.substring(1)}`;
+  const output = word.toLowerCase().replace(key, translation);
+
+  return isCapitalized(word)
+    ? `${output[0].toUpperCase()}${output.substring(1)}`
+    : output;
+}
+
+function isCapitalized(word) {
+  return word[0] === word[0].toUpperCase();
+}
+
+function convertToTranslationKey(word, pattern = IGNORED_CHARACTERS_REGEX) {
+  return word.toLowerCase().replace(pattern, '');
 }
 
 function highlightTranslation(translation) {
