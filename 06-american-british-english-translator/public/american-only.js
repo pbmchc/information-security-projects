@@ -1,6 +1,6 @@
 // British equivalents of American words
 
-export const americanOnly = {
+export const AMERICAN_ONLY = {
   "acclimate": "acclimatise",
   "acetaminophen": "paracetamol",
   "baby carriage": "pram",

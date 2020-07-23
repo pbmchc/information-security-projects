@@ -1,4 +1,4 @@
-export const americanToBritishTitles = {
+export const AMERICAN_TO_BRITISH_TITLES = {
   'mr.': 'mr',
   'mrs.': 'mrs',
   'ms.': 'ms',
