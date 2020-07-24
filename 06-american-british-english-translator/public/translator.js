@@ -6,6 +6,7 @@ import { SpecificWordTranslator } from './translators/specific-word.translator.j
 import { SpecificPhraseTranslator } from './translators/specific-phrase.translator.js';
 
 const DEFAULT_SKIPPED_TRANSLATION_INDEX = -1;
+const TRANSLATOR_ERROR_MESSAGE = 'Error: No text to translate.';
 const TRANSLATION_PIPELINE = [
   TimeTranslator,
   TitleTranslator,
@@ -14,11 +15,13 @@ const TRANSLATION_PIPELINE = [
   SpecificPhraseTranslator
 ];
 
+const ERROR_MESSAGE_ID = 'error-msg';
 const LOCALE_SELECT_ID = 'locale-select';
 const TRANSLATE_BUTTON_ID = 'translate-btn';
 const TEXT_INPUT_ID = 'text-input';
 const TRANSLATED_SENTENCE_ID = 'translated-sentence';
 
+const errorMessageElement = document.getElementById(ERROR_MESSAGE_ID);
 const localeSelectElement = document.getElementById(LOCALE_SELECT_ID);
 const translateButtonElement = document.getElementById(TRANSLATE_BUTTON_ID);
 const textInputElement = document.getElementById(TEXT_INPUT_ID);
@@ -26,9 +29,17 @@ const translatedSentenceElement = document.getElementById(TRANSLATED_SENTENCE_ID
 
 const onTranslate = () => {
   const text = textInputElement.value;
+
+  if(isEmpty(text)) {
+    displayErrorMessage();
+
+    return;
+  }
+
   const highlightTranslation = (translation) => `<span class="highlight">${translation}</span>`;
   const translationResult = translate(text, highlightTranslation);
 
+  errorMessageElement.innerText = '';
   displayTranslationResult(translationResult);
 };
 
@@ -70,8 +81,18 @@ function runTranslationPipeline(context) {
   return result;
 }
 
+function displayErrorMessage() {
+  translatedSentenceElement.innerHTML = '';
+  errorMessageElement.innerText = TRANSLATOR_ERROR_MESSAGE;
+}
+
 function displayTranslationResult(result) {
   translatedSentenceElement.innerHTML = result;
+}
+
+
+function isEmpty(text) {
+  return !text.trim();
 }
 
 try {
