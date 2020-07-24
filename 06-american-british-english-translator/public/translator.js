@@ -15,12 +15,14 @@ const TRANSLATION_PIPELINE = [
   SpecificPhraseTranslator
 ];
 
+const CLEAR_BUTTON_ID = 'clear-btn';
 const ERROR_MESSAGE_ID = 'error-msg';
 const LOCALE_SELECT_ID = 'locale-select';
 const TRANSLATE_BUTTON_ID = 'translate-btn';
 const TEXT_INPUT_ID = 'text-input';
 const TRANSLATED_SENTENCE_ID = 'translated-sentence';
 
+const clearButtonElement = document.getElementById(CLEAR_BUTTON_ID);
 const errorMessageElement = document.getElementById(ERROR_MESSAGE_ID);
 const localeSelectElement = document.getElementById(LOCALE_SELECT_ID);
 const translateButtonElement = document.getElementById(TRANSLATE_BUTTON_ID);
@@ -41,6 +43,12 @@ const onTranslate = () => {
 
   errorMessageElement.innerText = '';
   displayTranslationResult(translationResult);
+};
+
+const onClear = () => {
+  textInputElement.value = '';
+  errorMessageElement.innerText = '';
+  translatedSentenceElement.innerHTML = '';
 };
 
 const translate = (text, transform = (value) => value) => {
@@ -65,6 +73,7 @@ const translate = (text, transform = (value) => value) => {
 };
 
 translateButtonElement.addEventListener('click', onTranslate);
+clearButtonElement.addEventListener('click', onClear);
 
 function runTranslationPipeline(context) {
   let result;
