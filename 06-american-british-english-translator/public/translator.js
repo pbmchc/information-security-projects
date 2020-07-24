@@ -7,6 +7,7 @@ import { SpecificPhraseTranslator } from './translators/specific-phrase.translat
 
 const DEFAULT_SKIPPED_TRANSLATION_INDEX = -1;
 const TRANSLATOR_ERROR_MESSAGE = 'Error: No text to translate.';
+const TRANSLATOR_NO_TRANSLATION_NEEDED_MESSAGE = 'Everything looks good to me!';
 const TRANSLATION_PIPELINE = [
   TimeTranslator,
   TitleTranslator,
@@ -39,10 +40,10 @@ const onTranslate = () => {
   }
 
   const highlightTranslation = (translation) => `<span class="highlight">${translation}</span>`;
-  const translationResult = translate(text, highlightTranslation);
+  const result = translate(text, highlightTranslation);
 
   errorMessageElement.innerText = '';
-  displayTranslationResult(translationResult);
+  displayTranslationResult(result);
 };
 
 const onClear = () => {
@@ -52,6 +53,7 @@ const onClear = () => {
 };
 
 const translate = (text, transform = (value) => value) => {
+  let changes = 0;
   let lastSkippedTranslationIndex = DEFAULT_SKIPPED_TRANSLATION_INDEX;
   const translations = [];
   const words = text.split(INPUT_TEXT_SPLIT_REGEX);
@@ -63,13 +65,17 @@ const translate = (text, transform = (value) => value) => {
       if(!result) {
         translations.push(word);
       } else {
+        changes++;
         translations.push(transform(result.translation));
         lastSkippedTranslationIndex = result.lastWordIndex || DEFAULT_SKIPPED_TRANSLATION_INDEX;
       }
     }
   });
 
-  return translations.join(' ');
+  return {
+    translation: translations.join(' '),
+    changes
+  };
 };
 
 translateButtonElement.addEventListener('click', onTranslate);
@@ -95,8 +101,8 @@ function displayErrorMessage() {
   errorMessageElement.innerText = TRANSLATOR_ERROR_MESSAGE;
 }
 
-function displayTranslationResult(result) {
-  translatedSentenceElement.innerHTML = result;
+function displayTranslationResult({translation, changes}) {
+  translatedSentenceElement.innerHTML = changes ? translation : TRANSLATOR_NO_TRANSLATION_NEEDED_MESSAGE;
 }
 
 
