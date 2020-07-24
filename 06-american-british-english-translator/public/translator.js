@@ -5,7 +5,7 @@ import { SpecificWordTranslator } from './translators/specific-word.translator.j
 import { SpecificPhraseTranslator } from './translators/specific-phrase.translator.js';
 
 const DEFAULT_SKIPPED_TRANSLATION_INDEX = -1;
-const TRANSLATORS = [
+const TRANSLATION_PIPELINE = [
   TimeTranslator,
   TitleTranslator,
   SpellingTranslator,
@@ -23,10 +23,17 @@ const translateButtonElement = document.getElementById(TRANSLATE_BUTTON_ID);
 const textInputElement = document.getElementById(TEXT_INPUT_ID);
 const translatedSentenceElement = document.getElementById(TRANSLATED_SENTENCE_ID);
 
-const translate = () => {
+const onTranslate = () => {
+  const text = textInputElement.value;
+  const highlightTranslation = (translation) => `<span class="highlight">${translation}</span>`;
+  const translationResult = translate(text, highlightTranslation);
+
+  displayTranslationResult(translationResult);
+};
+
+const translate = (text, transform = (value) => value) => {
   let lastSkippedTranslationIndex = DEFAULT_SKIPPED_TRANSLATION_INDEX;
   const translations = [];
-  const text = textInputElement.value;
   const words = text.split(' ');
 
   words.forEach((word, index, wordsArray) => {
@@ -36,22 +43,22 @@ const translate = () => {
       if(!result) {
         translations.push(word);
       } else {
-        translations.push(highlightTranslation(result.translation));
+        translations.push(transform(result.translation));
         lastSkippedTranslationIndex = result.lastWordIndex || DEFAULT_SKIPPED_TRANSLATION_INDEX;
       }
     }
   });
 
-  displayTranslationResult(translations);
+  return translations.join(' ');
 };
 
-translateButtonElement.addEventListener('click', translate);
+translateButtonElement.addEventListener('click', onTranslate);
 
 function runTranslationPipeline(context) {
   let result;
   const targetLocale = localeSelectElement.value;
 
-  for(let translator of TRANSLATORS) {
+  for(let translator of TRANSLATION_PIPELINE) {
     result = translator.translate(context, targetLocale);
 
     if(result) {
@@ -62,12 +69,8 @@ function runTranslationPipeline(context) {
   return result;
 }
 
-function highlightTranslation(translation) {
-  return `<span class="highlight">${translation}</span>`;
-}
-
 function displayTranslationResult(result) {
-  translatedSentenceElement.innerHTML = result.join(' ');
+  translatedSentenceElement.innerHTML = result;
 }
 
 try {
