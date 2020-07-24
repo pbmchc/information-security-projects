@@ -9,13 +9,25 @@ export function formatTranslationOutput(key, word, translation) {
     return;
   }
 
+  const index = getFirstLetterIndex(word);
   const output = word.toLowerCase().replace(key, translation);
 
-  return isCapitalized(word)
-    ? `${output[0].toUpperCase()}${output.substring(1)}`
+  return isCapitalized(word, index)
+    ? capitalizeTranslationOutput(output, index)
     : output;
 }
 
-function isCapitalized(word) {
-  return word[0] === word[0].toUpperCase();
+function getFirstLetterIndex(word) {
+  return word.search(/\w/);
+}
+
+function isCapitalized(word, firstLetterIndex) {
+  return word[firstLetterIndex] === word[firstLetterIndex].toUpperCase();
+}
+
+function capitalizeTranslationOutput(output, index) {
+  const beginning = output.substring(0, index);
+  const ending = output.substring(index + 1);
+
+  return `${beginning}${output[index].toUpperCase()}${ending}`;
 }

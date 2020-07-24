@@ -1,3 +1,4 @@
+import { INPUT_TEXT_SPLIT_REGEX } from './constants/constants.js';
 import { TimeTranslator } from './translators/time.translator.js';
 import { TitleTranslator } from './translators/title.translator.js';
 import { SpellingTranslator } from './translators/spelling.translator.js';
@@ -34,7 +35,7 @@ const onTranslate = () => {
 const translate = (text, transform = (value) => value) => {
   let lastSkippedTranslationIndex = DEFAULT_SKIPPED_TRANSLATION_INDEX;
   const translations = [];
-  const words = text.split(' ');
+  const words = text.split(INPUT_TEXT_SPLIT_REGEX);
 
   words.forEach((word, index, wordsArray) => {
     if(index > lastSkippedTranslationIndex) {

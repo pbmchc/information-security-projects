@@ -1,6 +1,8 @@
 import { AMERICAN_TO_BRITISH_TITLES } from '../translations/american-to-british-titles.js';
 import { BaseTranslator } from './base.translator.js';
+import { convertToTranslationKey } from './utils.js';
 
+const IGNORED_CHARACTERS_TITLES_REGEX = /[^\w-'\.]/g;
 const TRANSLATOR_NAME = 'TITLES_TRANSLATOR';
 
 export const TitleTranslator = (function() {
@@ -12,7 +14,7 @@ export const TitleTranslator = (function() {
     return {
       name: TRANSLATOR_NAME,
       dictionary: AMERICAN_TO_BRITISH_TITLES,
-      translationKey: word.toLowerCase(),
+      translationKey: convertToTranslationKey(word, IGNORED_CHARACTERS_TITLES_REGEX),
       word,
       locale
     };

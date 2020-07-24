@@ -5,11 +5,11 @@ export const BaseTranslator = (function() {
   const entries = {};
 
   function translate(context) {
-    const {name, dictionary, translationKey, word, locale} = context;
+    const {name, dictionary, translationKey: key, word, locale} = context;
 
     if(locale === TARGET_LOCALE.GB) {
-      return dictionary[translationKey]
-        ? {translation: formatTranslationOutput(translationKey, word, dictionary[key])}
+      return dictionary[key]
+        ? {translation: formatTranslationOutput(key, word, dictionary[key])}
         : null;
     }
 
@@ -17,10 +17,10 @@ export const BaseTranslator = (function() {
       entries[name] = Object.entries(dictionary);
     }
     
-    const entry = entries[name].find(([_, britishKey]) => translationKey === britishKey);
+    const entry = entries[name].find(([_, britishKey]) => key === britishKey);
   
     return entry
-      ? {translation: formatTranslationOutput(translationKey, word, entry[0])}
+      ? {translation: formatTranslationOutput(key, word, entry[0])}
       : null;
   }
 
