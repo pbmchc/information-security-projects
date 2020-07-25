@@ -1,4 +1,5 @@
 import { INPUT_TEXT_SPLIT_REGEX, TARGET_LOCALE } from './constants/constants.js';
+import { ELEMENT_SELECTORS } from './constants/element-selectors.js';
 import { TimeTranslator } from './translators/time.translator.js';
 import { TitleTranslator } from './translators/title.translator.js';
 import { SpellingTranslator } from './translators/spelling.translator.js';
@@ -16,19 +17,12 @@ const TRANSLATION_PIPELINE = [
   SpecificPhraseTranslator
 ];
 
-const CLEAR_BUTTON_ID = 'clear-btn';
-const ERROR_MESSAGE_ID = 'error-msg';
-const LOCALE_SELECT_ID = 'locale-select';
-const TRANSLATE_BUTTON_ID = 'translate-btn';
-const TEXT_INPUT_ID = 'text-input';
-const TRANSLATED_SENTENCE_ID = 'translated-sentence';
-
-const clearButtonElement = document.getElementById(CLEAR_BUTTON_ID);
-const errorMessageElement = document.getElementById(ERROR_MESSAGE_ID);
-const localeSelectElement = document.getElementById(LOCALE_SELECT_ID);
-const translateButtonElement = document.getElementById(TRANSLATE_BUTTON_ID);
-const textInputElement = document.getElementById(TEXT_INPUT_ID);
-const translatedSentenceElement = document.getElementById(TRANSLATED_SENTENCE_ID);
+const clearButtonElement = document.getElementById(ELEMENT_SELECTORS.CLEAR_BUTTON_ID);
+const errorMessageElement = document.getElementById(ELEMENT_SELECTORS.ERROR_MESSAGE_ID);
+const localeSelectElement = document.getElementById(ELEMENT_SELECTORS.LOCALE_SELECT_ID);
+const textInputElement = document.getElementById(ELEMENT_SELECTORS.TEXT_INPUT_ID);
+const translateButtonElement = document.getElementById(ELEMENT_SELECTORS.TRANSLATE_BUTTON_ID);
+const translatedSentenceElement = document.getElementById(ELEMENT_SELECTORS.TRANSLATED_SENTENCE_ID);
 
 const onTranslate = () => {
   const text = textInputElement.value;

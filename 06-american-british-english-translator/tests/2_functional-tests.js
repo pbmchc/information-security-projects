@@ -1,65 +1,75 @@
-/*
- *
- *
- *       FILL IN EACH FUNCTIONAL TEST BELOW COMPLETELY
- *       -----[Keep the tests in the same order!]----
- *       (if additional are added, keep them at the very end!)
- */
-
 const chai = require('chai');
 const assert = chai.assert;
 
+const { ELEMENT_SELECTORS } = require('../public/constants/element-selectors.js');
 let Translator;
 
 suite('Functional Tests', () => {
+  let clearButtonElement;
+  let errorMessageElement;
+  let textInputElement;
+  let translateButtonElement;
+  let translatedSentenceElement;
+
   suiteSetup(() => {
-    // DOM already mocked -- load translator then run tests
     Translator = require('../public/translator.js');
+
+    clearButtonElement = document.getElementById(ELEMENT_SELECTORS.CLEAR_BUTTON_ID);
+    errorMessageElement = document.getElementById(ELEMENT_SELECTORS.ERROR_MESSAGE_ID);
+    textInputElement = document.getElementById(ELEMENT_SELECTORS.TEXT_INPUT_ID);
+    translateButtonElement = document.getElementById(ELEMENT_SELECTORS.TRANSLATE_BUTTON_ID);
+    translatedSentenceElement = document.getElementById(ELEMENT_SELECTORS.TRANSLATED_SENTENCE_ID);
   });
 
-  suite('Function ____()', () => {
-    /* 
-      The translated sentence is appended to the `translated-sentence` `div`
-      and the translated words or terms are wrapped in 
-      `<span class="highlight">...</span>` tags when the "Translate" button is pressed.
-    */
+  suite('Function onTranslate()', () => {
     test("Translation appended to the `translated-sentence` `div`", done => {
+      const input = 'Apples are my favorite fruit.';
+      const output = 'Apples are my <span class="highlight">favourite</span> fruit.';
 
-      // done();
+      textInputElement.value = input;
+      translateButtonElement.click();
+
+      assert.equal(translatedSentenceElement.innerHTML, output);
+      done();
     });
 
-    /* 
-      If there are no words or terms that need to be translated,
-      the message 'Everything looks good to me!' is appended to the
-      `translated-sentence` `div` when the "Translate" button is pressed.
-    */
     test("'Everything looks good to me!' message appended to the `translated-sentence` `div`", done => {
+      const input = 'This text is the same as its translation';
+      const output = 'Everything looks good to me!';
 
-      // done();
+      textInputElement.value = input;
+      translateButtonElement.click();
+
+      assert.equal(translatedSentenceElement.innerHTML, output);
+      done();
     });
 
-    /* 
-      If the text area is empty when the "Translation" button is
-      pressed, append the message 'Error: No text to translate.' to 
-      the `error-msg` `div`.
-    */
-    test("'Error: No text to translate.' message appended to the `translated-sentence` `div`", done => {
+    test("'Error: No text to translate.' message appended to the `error message` `div`", done => {
+      const input = '';
+      const output = 'Error: No text to translate.';
 
-      // done();
+      textInputElement.value = input;
+      translateButtonElement.click();
+
+      assert.equal(translatedSentenceElement.innerHTML, '');
+      assert.equal(errorMessageElement.innerText, output);
+      done();
     });
-
   });
 
-  suite('Function ____()', () => {
-    /* 
-      The text area and both the `translated-sentence` and `error-msg`
-      `divs` are cleared when the "Clear" button is pressed.
-    */
+  suite('Function onClear()', () => {
     test("Text area, `translated-sentence`, and `error-msg` are cleared", done => {
+      const content = 'Some content';
 
-      // done();
+      errorMessageElement.innerText = content;
+      textInputElement.value = content;
+      translatedSentenceElement.innerText = content;
+      clearButtonElement.click();
+
+      assert.equal(errorMessageElement.innerText, '');
+      assert.equal(textInputElement.value, '');
+      assert.equal(translatedSentenceElement.innerHTML, '');
+      done();
     });
-
   });
-
 });
