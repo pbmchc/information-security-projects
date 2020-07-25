@@ -1,4 +1,4 @@
-import { INPUT_TEXT_SPLIT_REGEX } from './constants/constants.js';
+import { INPUT_TEXT_SPLIT_REGEX, TARGET_LOCALE } from './constants/constants.js';
 import { TimeTranslator } from './translators/time.translator.js';
 import { TitleTranslator } from './translators/title.translator.js';
 import { SpellingTranslator } from './translators/spelling.translator.js';
@@ -32,15 +32,16 @@ const translatedSentenceElement = document.getElementById(TRANSLATED_SENTENCE_ID
 
 const onTranslate = () => {
   const text = textInputElement.value;
-
+  
   if(isEmpty(text)) {
     displayErrorMessage();
-
+    
     return;
   }
-
+  
+  const targetLocale = localeSelectElement.value;
   const highlightTranslation = (translation) => `<span class="highlight">${translation}</span>`;
-  const result = translate(text, highlightTranslation);
+  const result = translate(text, targetLocale, highlightTranslation);
 
   errorMessageElement.innerText = '';
   displayTranslationResult(result);
@@ -52,7 +53,7 @@ const onClear = () => {
   translatedSentenceElement.innerHTML = '';
 };
 
-const translate = (text, transform = (value) => value) => {
+const translate = (text, locale = TARGET_LOCALE.GB, transform = (value) => value) => {
   let changes = 0;
   let lastSkippedTranslationIndex = DEFAULT_SKIPPED_TRANSLATION_INDEX;
   const translations = [];
@@ -60,7 +61,7 @@ const translate = (text, transform = (value) => value) => {
 
   words.forEach((word, index, wordsArray) => {
     if(index > lastSkippedTranslationIndex) {
-      const result = runTranslationPipeline({word, index, wordsArray});
+      const result = runTranslationPipeline({word, index, wordsArray}, locale);
       
       if(!result) {
         translations.push(word);
@@ -81,12 +82,11 @@ const translate = (text, transform = (value) => value) => {
 translateButtonElement.addEventListener('click', onTranslate);
 clearButtonElement.addEventListener('click', onClear);
 
-function runTranslationPipeline(context) {
+function runTranslationPipeline(context, locale) {
   let result;
-  const targetLocale = localeSelectElement.value;
 
   for(let translator of TRANSLATION_PIPELINE) {
-    result = translator.translate(context, targetLocale);
+    result = translator.translate(context, locale);
 
     if(result) {
       break;
