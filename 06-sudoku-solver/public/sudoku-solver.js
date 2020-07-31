@@ -1,16 +1,35 @@
-const textArea = document.getElementById('text-input');
-// import { puzzlesAndSolutions } from './puzzle-strings.js';
+import { puzzlesAndSolutions } from './puzzle-strings.js';
+
+const EMPTY_CELL_PLACEHOLDER = '.';
+const SAMPLE_PUZZLE = puzzlesAndSolutions[0][0];
+const VALID_PUZZLE_LENGTH = 81;
+
+const SUDOKU_CELL_CLASS = '.sudoku-input';
+const SUDOKU_INPUT_ID = 'text-input';
+
+const cells = document.querySelectorAll(SUDOKU_CELL_CLASS);
+const puzzleInput = document.getElementById(SUDOKU_INPUT_ID);
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Load a simple puzzle into the text area
-  textArea.value = '..9..5.1.85.4....2432......1...69.83.9.....6.62.71...9......1945....4.37.4.3..6..';
+  puzzleInput.value = SAMPLE_PUZZLE;
+  setPuzzleInputListener();
+  updateSudokuBoard(puzzleInput.value);
 });
 
-/* 
-  Export your functions for testing in Node.
-  Note: The `try` block is to prevent errors on
-  the client side
-*/
+function setPuzzleInputListener() {
+  puzzleInput.addEventListener('input', ({target: {value}}) => updateSudokuBoard(value));
+}
+
+function updateSudokuBoard(puzzle) {
+  const values = puzzle.split('');
+
+  if(values.length !== VALID_PUZZLE_LENGTH) {
+    return;
+  }
+
+  values.forEach((value, index) => cells[index].value = value !== EMPTY_CELL_PLACEHOLDER ? value : '');
+}
+
 try {
   module.exports = {
 
