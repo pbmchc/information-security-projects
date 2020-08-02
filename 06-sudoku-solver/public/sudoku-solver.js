@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setBoardListener();
   setPuzzleInputListener();
   setSolveButtonListener();
+  setClearButtonListener();
   updateBoard(puzzleInputElement.value);
 });
 
@@ -39,6 +40,10 @@ function setPuzzleInputListener() {
 
 function setSolveButtonListener() {
   solveButtonElement.addEventListener('click', () => solvePuzzle(puzzleInputElement.value));
+}
+
+function setClearButtonListener() {
+  clearButtonElement.addEventListener('click', clearPuzzle);
 }
 
 function updatePuzzleInput({target}) {
@@ -73,6 +78,13 @@ function solvePuzzle(value) {
 
   errorMessageElement.innerText = '';
   findPuzzleSolution();
+}
+
+function clearPuzzle() {
+  const value = Array.from({length: VALID_PUZZLE_LENGTH}).map(() => '.').join('');
+
+  puzzleInputElement.value = value;
+  updateBoard(value);
 }
 
 function getPuzzlePartIndex(position) {
