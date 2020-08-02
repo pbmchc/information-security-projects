@@ -52,20 +52,20 @@ function updatePuzzleInput({target}) {
 }
 
 function updateBoard(value) {
-  const puzzle = value.split('');
-  const error = validatePuzzle(puzzle);
+  const error = validatePuzzle(value);
 
   if(error) {
     return;
   }
+
+  const puzzle = value.split('');
 
   resetPuzzleError();
   puzzle.forEach((part, index) => sudokuBoardCells[index].value = part !== EMPTY_CELL_PLACEHOLDER ? part : '');
 }
 
 function solvePuzzle(value) {
-  const puzzle = value.split('');
-  const error = validatePuzzle(puzzle);
+  const error = validatePuzzle(value);
 
   if(error) {
     showPuzzleError(error);
