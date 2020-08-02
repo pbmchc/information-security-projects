@@ -1,24 +1,17 @@
-import { puzzlesAndSolutions } from './puzzle-strings.js';
+import { EMPTY_CELL_PLACEHOLDER, VALID_PUZZLE_LENGTH } from './constants/constants.js';
+import { ELEMENT_SELECTORS } from './constants/element-selectors.js';
+import { puzzlesAndSolutions } from './puzzles/puzzle-strings.js';
+import { isValidPuzzleCharacter, validatePuzzle } from './validators/puzzle-value.validator.js';
 
 const BOARD_INITIAL_CHARACTER_CODE = 65;
-const EMPTY_CELL_PLACEHOLDER = '.';
-const INVALID_PUZZLE_LENGTH_ERROR_MESSAGE = 'Error: Expected puzzle to be 81 characters long.';
 const SAMPLE_PUZZLE = puzzlesAndSolutions[0][0];
-const VALID_PUZZLE_LENGTH = 81;
 
-const CLEAR_BUTTON_ID = 'clear-button';
-const ERROR_MESSAGE_ID = 'error-msg';
-const SOLVE_BUTTON_ID = 'solve-button';
-const SUDOKU_BOARD_ID = 'sudoku-grid';
-const SUDOKU_CELL_CLASS = 'sudoku-input';
-const SUDOKU_INPUT_ID = 'text-input';
-
-const clearButtonElement = document.getElementById(CLEAR_BUTTON_ID);
-const errorMessageElement = document.getElementById(ERROR_MESSAGE_ID);
-const puzzleInputElement = document.getElementById(SUDOKU_INPUT_ID);
-const solveButtonElement = document.getElementById(SOLVE_BUTTON_ID);
-const sudokuBoardCells = document.querySelectorAll(`.${SUDOKU_CELL_CLASS}`);
-const sudokuBoardElement = document.getElementById(SUDOKU_BOARD_ID);
+const clearButtonElement = document.getElementById(ELEMENT_SELECTORS.CLEAR_BUTTON_ID);
+const errorMessageElement = document.getElementById(ELEMENT_SELECTORS.ERROR_MESSAGE_ID);
+const puzzleInputElement = document.getElementById(ELEMENT_SELECTORS.SUDOKU_INPUT_ID);
+const solveButtonElement = document.getElementById(ELEMENT_SELECTORS.SOLVE_BUTTON_ID);
+const sudokuBoardCells = document.querySelectorAll(`.${ELEMENT_SELECTORS.SUDOKU_CELL_CLASS}`);
+const sudokuBoardElement = document.getElementById(ELEMENT_SELECTORS.SUDOKU_BOARD_ID);
 
 document.addEventListener('DOMContentLoaded', () => {
   puzzleInputElement.value = SAMPLE_PUZZLE;
@@ -47,36 +40,40 @@ function setClearButtonListener() {
 }
 
 function updatePuzzleInput({target}) {
-  if(!target.classList.contains(SUDOKU_CELL_CLASS)) {
+  if(!target.classList.contains(ELEMENT_SELECTORS.SUDOKU_CELL_CLASS) || !isValidPuzzleCharacter(target.value)) {
     return;
   }
 
   const puzzlePartIndex = getPuzzlePartIndex(target.id);
   const puzzleValue = replacePuzzlePart(puzzleInputElement.value, target.value, puzzlePartIndex);
 
+  resetPuzzleError();
   puzzleInputElement.value = puzzleValue;
 }
 
 function updateBoard(value) {
   const puzzle = value.split('');
+  const error = validatePuzzle(puzzle);
 
-  if(!isPuzzleLengthValid(puzzle)) {
+  if(error) {
     return;
   }
 
+  resetPuzzleError();
   puzzle.forEach((part, index) => sudokuBoardCells[index].value = part !== EMPTY_CELL_PLACEHOLDER ? part : '');
 }
 
 function solvePuzzle(value) {
   const puzzle = value.split('');
+  const error = validatePuzzle(puzzle);
 
-  if(!isPuzzleLengthValid(puzzle)) {
-    showPuzzleLengthError();
+  if(error) {
+    showPuzzleError(error);
 
     return;
   }
 
-  errorMessageElement.innerText = '';
+  resetPuzzleError();
   findPuzzleSolution();
 }
 
@@ -102,12 +99,12 @@ function replacePuzzlePart(value, replacement, index) {
   return `${value.substring(0, index)}${replacement || EMPTY_CELL_PLACEHOLDER}${value.substring(index + 1)}`;
 }
 
-function isPuzzleLengthValid(puzzle) {
-  return puzzle.length === VALID_PUZZLE_LENGTH;
+function showPuzzleError(message) {
+  errorMessageElement.innerText = message;
 }
 
-function showPuzzleLengthError() {
-  errorMessageElement.innerText = INVALID_PUZZLE_LENGTH_ERROR_MESSAGE;
+function resetPuzzleError() {
+  errorMessageElement.innerText = '';
 }
 
 function findPuzzleSolution() {}
