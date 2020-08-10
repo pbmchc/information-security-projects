@@ -68,7 +68,7 @@ function updateBoard(puzzle) {
     return;
   }
 
-  const puzzleArray = puzzle.split('');
+  const puzzleArray = convertToPuzzleArray(puzzle);
 
   resetPuzzleError();
   puzzleArray.forEach((part, index) => sudokuBoardCells[index].value = part !== EMPTY_CELL_PLACEHOLDER ? part : '');
@@ -113,6 +113,10 @@ function getPuzzlePartIndex(position) {
 
 function getRowMultiplier(code) {
   return code - BOARD_INITIAL_CHARACTER_CODE;
+}
+
+function convertToPuzzleArray(puzzle) {
+  return puzzle.split('');
 }
 
 function showPuzzleError(message) {
@@ -166,6 +170,7 @@ function replacePuzzlePart(puzzle, replacement, index) {
 
 try {
   module.exports = {
+    convertToPuzzleArray,
     getPuzzleSolution
   }
 } catch (e) {}
