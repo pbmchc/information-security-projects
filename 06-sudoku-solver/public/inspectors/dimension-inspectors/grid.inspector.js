@@ -7,7 +7,7 @@ export const GridInspector = (function() {
   
     for(let i = rowStartIndex; i < rowStartIndex + 3; i++) {
       for(let j = columnStartIndex; j < columnStartIndex + 3; j++) {
-        const currentElementIndex = getCurrentElementIndex({row, column});
+        const currentElementIndex = getCurrentElementIndex({row: i, column: j});
   
         if(puzzle[currentElementIndex] === value && currentElementIndex !== index) {
           return true;
