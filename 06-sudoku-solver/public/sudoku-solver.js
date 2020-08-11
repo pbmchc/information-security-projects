@@ -16,7 +16,9 @@ const solveButtonElement = document.getElementById(ELEMENT_SELECTORS.SOLVE_BUTTO
 const sudokuBoardCells = document.querySelectorAll(`.${ELEMENT_SELECTORS.SUDOKU_CELL_CLASS}`);
 const sudokuBoardElement = document.getElementById(ELEMENT_SELECTORS.SUDOKU_BOARD_ID);
 
-document.addEventListener('DOMContentLoaded', () => {
+initializeSolver();
+
+function initializeSolver() {
   puzzleInputElement.value = SAMPLE_PUZZLE;
 
   setBoardListener();
@@ -24,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setSolveButtonListener();
   setClearButtonListener();
   updateBoard(puzzleInputElement.value);
-});
+}
 
 function setBoardListener() {
   sudokuBoardElement.addEventListener('input', updatePuzzleInput);

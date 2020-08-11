@@ -1,14 +1,28 @@
 const chai = require("chai");
 const assert = chai.assert;
 
-const jsdom = require("jsdom");
-const { JSDOM } = jsdom;
+const { ELEMENT_SELECTORS } = require('../public/constants/element-selectors.js');
+const { VALID_PUZZLE_LENGTH } = require('../public/constants/constants.js');
+const { puzzlesAndSolutions } = require('../public/puzzles/puzzle-strings.js');
 let Solver;
 
 suite('Functional Tests', () => {
+  let clearButtonElement;
+  let puzzleInputElement;
+  let solveButtonElement;
+  let sudokuBoardCells;
+  const emptySudokuInputValue = Array.from({length: VALID_PUZZLE_LENGTH}).map(() => '.').join('');
+  const getSudokuBoardValue = () => Array.from(sudokuBoardCells)
+    .map(({value}) => value)
+    .reduce((result, value) => result + value, '');
+
   suiteSetup(() => {
-    // DOM already mocked -- load sudoku solver then run tests
     Solver = require('../public/sudoku-solver.js');
+
+    clearButtonElement = document.getElementById(ELEMENT_SELECTORS.CLEAR_BUTTON_ID);
+    puzzleInputElement = document.getElementById(ELEMENT_SELECTORS.SUDOKU_INPUT_ID);
+    solveButtonElement = document.getElementById(ELEMENT_SELECTORS.SOLVE_BUTTON_ID);
+    sudokuBoardCells = document.querySelectorAll(`.${ELEMENT_SELECTORS.SUDOKU_CELL_CLASS}`);
   });
   
   suite('Text area and sudoku grid update automatically', () => {
@@ -28,18 +42,34 @@ suite('Functional Tests', () => {
   });
   
   suite('Clear and solve buttons', () => {
-    // Pressing the "Clear" button clears the sudoku 
-    // grid and the text area
-    test('Function clearInput()', done => {
+    const [[puzzle, solution]] = puzzlesAndSolutions;
 
-      // done();
+    test('Function clearPuzzle()', done => {
+      const {InputEvent} = window;
+      const puzzleInputEvent = new InputEvent('input');
+
+      puzzleInputElement.value = puzzle;
+      puzzleInputElement.dispatchEvent(puzzleInputEvent);
+      clearButtonElement.click();
+
+      assert.equal(puzzleInputElement.value, emptySudokuInputValue);
+      assert.equal(getSudokuBoardValue(), '');
+
+      done();
     });
     
-    // Pressing the "Solve" button solves the puzzle and
-    // fills in the grid with the solution
-    test('Function showSolution(solve(input))', done => {
+    test('Function solvePuzzle(puzzle)', done => {
+      const {InputEvent} = window;
+      const puzzleInputEvent = new InputEvent('input');
 
-      // done();
+      puzzleInputElement.value = puzzle;
+      puzzleInputElement.dispatchEvent(puzzleInputEvent);
+      solveButtonElement.click();
+
+      assert.equal(puzzleInputElement.value, solution);
+      assert.equal(getSudokuBoardValue(), solution);
+
+      done();
     });
   });
 });
