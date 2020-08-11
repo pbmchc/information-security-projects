@@ -11,10 +11,10 @@ suite('Functional Tests', () => {
   let puzzleInputElement;
   let solveButtonElement;
   let sudokuBoardCells;
+  const [[puzzle, solution]] = puzzlesAndSolutions;
   const emptySudokuInputValue = Array.from({length: VALID_PUZZLE_LENGTH}).map(() => '.').join('');
-  const getSudokuBoardValue = () => Array.from(sudokuBoardCells)
-    .map(({value}) => value)
-    .reduce((result, value) => result + value, '');
+  const updatePuzzleCell = (puzzle, {index, value}) => `${puzzle.substring(0, index)}${value}${puzzle.substring(index + 1)}`;
+  const getSudokuBoardValue = () => Array.from(sudokuBoardCells).map(({value}) => value).reduce((result, value) => result + value, '');
 
   suiteSetup(() => {
     Solver = require('../public/sudoku-solver.js');
@@ -26,24 +26,43 @@ suite('Functional Tests', () => {
   });
   
   suite('Text area and sudoku grid update automatically', () => {
-    // Entering a valid number in the text area populates 
-    // the correct cell in the sudoku grid with that number
     test('Valid number in text area populates correct cell in grid', done => {
+      const {InputEvent} = window;
+      const puzzleInputEvent = new InputEvent('input');
+      const change = {index: 1, value: '3'};
+      const updatePuzzle = updatePuzzleCell(puzzle, change);
 
-      // done();
+      puzzleInputElement.value = puzzle;
+      puzzleInputElement.dispatchEvent(puzzleInputEvent);
+      puzzleInputElement.value = updatePuzzle;
+      puzzleInputElement.dispatchEvent(puzzleInputEvent);
+
+      assert.equal(sudokuBoardCells[change.index].value, change.value);
+
+      done();
     });
 
-    // Entering a valid number in the grid automatically updates
-    // the puzzle string in the text area
     test('Valid number in grid updates the puzzle string in the text area', done => {
+      const {InputEvent} = window;
+      const puzzleInputEvent = new InputEvent('input');
+      const sudokuCellInputEvent = new InputEvent('input', {bubbles: true});
 
-      // done();
+      const change = {index: 1, value: '3'};
+      const sudokuCellInput = sudokuBoardCells[change.index];
+      const expectedPuzzleInputValue = updatePuzzleCell(puzzle, change);
+
+      puzzleInputElement.value = puzzle;
+      puzzleInputElement.dispatchEvent(puzzleInputEvent);
+      sudokuCellInput.value = change.value;
+      sudokuCellInput.dispatchEvent(sudokuCellInputEvent);
+
+      assert.equal(puzzleInputElement.value, expectedPuzzleInputValue);
+
+      done();
     });
   });
   
   suite('Clear and solve buttons', () => {
-    const [[puzzle, solution]] = puzzlesAndSolutions;
-
     test('Function clearPuzzle()', done => {
       const {InputEvent} = window;
       const puzzleInputEvent = new InputEvent('input');
