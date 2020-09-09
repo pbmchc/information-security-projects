@@ -1,7 +1,7 @@
 
 ## Information Security and Quality Assurance
 
-This repository contains information security and quality assurance certification projects.
+This repository contains information security and quality assurance certification projects.  
 For more information please visit [https://www.freecodecamp.org/](https://www.freecodecamp.org/).
 
 To run an individual project, after cloning the repository:
