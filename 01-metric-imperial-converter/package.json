@@ -9,14 +9,14 @@
 		"watch": "nodemon server.js"
 	},
 	"dependencies": {
-		"express": "^4.14.0",
-		"cors": "^2.8.1",
 		"body-parser": "^1.15.2",
-		"chai": "^3.5.0",
-		"chai-http": "^3.0.0",
-		"mocha": "^3.2.0",
-		"zombie": "^6.1.4",
-		"helmet": "^3.1.0"
+		"chai": "^4.3.6",
+		"chai-http": "^4.3.0",
+		"cors": "^2.8.1",
+		"express": "^4.14.0",
+		"helmet": "^3.1.0",
+		"mocha": "^9.2.2",
+		"zombie": "^6.1.4"
 	},
 	"devDependencies": {
 		"cross-env": "^7.0.3"
