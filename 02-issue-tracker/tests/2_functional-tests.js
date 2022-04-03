@@ -63,7 +63,7 @@ suite('Functional Tests', () => {
         chai.request(server)
           .post(TEST_PROJECT_REQUEST_URL)
           .send(incompleteIssue)
-          .end(({response: {status, text}}) => {          
+          .end((_, {status, text}) => {         
             assert.equal(status, 400);
             assert.equal(text, 'Missing required field: created_by');
             done();
@@ -77,7 +77,7 @@ suite('Functional Tests', () => {
         chai.request(server)
           .put(TEST_PROJECT_REQUEST_URL)
           .send({})
-          .end(({response: {status, text}}) => {          
+          .end((_, {status, text}) => {          
             assert.equal(status, 400);
             assert.equal(text, 'No updated field sent');
             done();
@@ -181,7 +181,7 @@ suite('Functional Tests', () => {
         chai.request(server)
           .delete(TEST_PROJECT_REQUEST_URL)
           .send({})
-          .end(({response: {status, text}}) => {          
+          .end((_, {status, text}) => {          
             assert.equal(status, 400);
             assert.equal(text, 'Id error');
             done();
