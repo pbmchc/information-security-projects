@@ -27,7 +27,7 @@ function updateIssue(issue, done) {
     const {_id} = issue;
     const updatedIssue = {...issue, updated_on: Date.now()};
 
-    Issue.update({_id}, updatedIssue, (err) =>
+    Issue.updateOne({_id}, updatedIssue, (err) =>
         err
             ? done({msg: UPDATING_ISSUE_ERROR_MESSAGE(_id)})
             : done(null, UPDATING_ISSUE_SUCCESS_MESSAGE(_id)));
