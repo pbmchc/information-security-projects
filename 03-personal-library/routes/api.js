@@ -9,9 +9,10 @@ const {createBookValidator, updateBookCommentsValidator} = require('../validator
 mongoose.connect(
   process.env.DB,
   {
-    useNewUrlParser: true,
     useCreateIndex: true,
-    useFindAndModify: false
+    useFindAndModify: false,
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
   }
 );
 
