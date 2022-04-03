@@ -10,8 +10,9 @@ const {createIssueValidator, updateIssueValidator, deleteIssueValidator} = requi
 mongoose.connect(
   process.env.DB,
   {
+    useCreateIndex: true,
     useNewUrlParser: true,
-    useCreateIndex: true
+    useUnifiedTopology: true
   }
 );
 

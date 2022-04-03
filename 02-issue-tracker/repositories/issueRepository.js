@@ -36,7 +36,7 @@ function updateIssue(issue, done) {
 function deleteIssue(issue, done) {
     const {_id} = issue;
 
-    Issue.remove(issue, (err) =>
+    Issue.deleteOne(issue, (err) =>
         err
             ? done({msg: DELETING_ISSUE_ERROR_MESSAGE(_id)})
             : done(null, DELETING_ISSUE_SUCCESS_MESSAGE(_id)));
