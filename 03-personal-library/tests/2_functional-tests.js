@@ -50,7 +50,7 @@ suite('Functional Tests', () => {
         chai.request(server)
           .post('/api/books')
           .send({})
-          .end(({response: {status, text}}) => {
+          .end((_, {status, text}) => {
             assert.equal(status, 400);
             assert.equal(text, 'Missing required field: title');
             done();
@@ -81,7 +81,7 @@ suite('Functional Tests', () => {
 
         chai.request(server)
           .get(`/api/books/${invalidIdentifier}`)
-          .end(({response: {status, text}}) => {
+          .end((_, {status, text}) => {
             assert.equal(status, 400);
             assert.equal(text, 'No book exists');
             done();
@@ -131,7 +131,7 @@ suite('Functional Tests', () => {
         chai.request(server)
           .post(`/api/books/${id}`)
           .send({})
-          .end(({response: {status, text}}) => {
+          .end((_, {status, text}) => {
             assert.equal(status, 400);
             assert.equal(text, 'Missing required field: comment');
             done();
