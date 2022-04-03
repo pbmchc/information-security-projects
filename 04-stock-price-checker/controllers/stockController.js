@@ -75,7 +75,7 @@ async function _prepareSingleStockData(record, ip) {
 }
 
 function _getStockRequestUrl(stock) {
-    return `${process.env.STOCK_API}/stock/${stock.toUpperCase()}/quote`;
+    return `${process.env.STOCK_API}/stock/${stock.toLowerCase()}/quote`;
 }
 
 exports.getStock = getStock;
