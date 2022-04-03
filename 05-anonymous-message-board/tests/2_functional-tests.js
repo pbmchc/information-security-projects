@@ -37,7 +37,7 @@ suite('Functional Tests', function() {
         chai.request(server)
           .post(THREAD_REQUEST_URL)
           .send({delete_password})
-          .end(({response: {status, text}}) => {
+          .end((_, {status, text}) => {
             assert.equal(status, 400);
             assert.equal(text, 'Missing required field: text');
             done();
@@ -104,7 +104,7 @@ suite('Functional Tests', function() {
         chai.request(server)
           .delete(THREAD_REQUEST_URL)
           .send({delete_password: 'incorrect-password', thread_id})
-          .end(({response: {status, text}}) => {
+          .end((_, {status, text}) => {
             assert.equal(status, 400);
             assert.equal(text, 'Incorrect password');
             done();
@@ -145,7 +145,7 @@ suite('Functional Tests', function() {
         chai.request(server)
           .post(THREAD_REPLY_REQUEST_URL)
           .send(THREAD_REPLY_MOCK)
-          .end(({response: {status, text}}) => {
+          .end((_, {status, text}) => {
             assert.equal(status, 400);
             assert.equal(text, 'Missing required field: thread_id');
             done();
@@ -238,7 +238,7 @@ suite('Functional Tests', function() {
         chai.request(server)
           .delete(THREAD_REPLY_REQUEST_URL)
           .send({thread_id, reply_id, delete_password: 'incorrect-password'})
-          .end(({response: {status, text}}) => {
+          .end((_, {status, text}) => {
             assert.equal(status, 400);
             assert.equal(text, 'Incorrect password');
             done();
