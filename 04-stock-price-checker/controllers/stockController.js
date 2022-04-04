@@ -1,4 +1,4 @@
-const request = require('request-promise');
+const axios = require('axios').default;
 
 const stockRepository = require('../repositories/stockRepository');
 const {prepareErrorPayload} = require('../helpers/errorHelper');
@@ -12,7 +12,11 @@ async function getStock({connection, query: {stock, like}}, res, next) {
     const tickers = Array.isArray(stock) ? stock : [stock];
 
     try {
-        const records = await Promise.all(tickers.map(ticker => request(_getStockRequestUrl(ticker))));
+        const records = await Promise.all(tickers.map(async ticker => {
+            const { data } = await axios.get(_getStockRequestUrl(ticker));
+            return data;
+        }));
+
         const validationError = validateStockRecords(records, tickers);
 
         if(validationError) {
@@ -62,7 +66,7 @@ function _prepareMultipleStockData(stockRecords) {
 }
 
 async function _prepareSingleStockData(record, ip) {
-    const {symbol: stock, latestPrice: price} = JSON.parse(record);
+    const {symbol: stock, latestPrice: price} = record;
     const {likes: {length}} = await stockRepository.getStockTicker(stock, ip);
 
     return {
