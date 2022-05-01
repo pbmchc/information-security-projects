@@ -1,5 +1,11 @@
+# byte-compiled
+*/__pycache__
+
 # external modules
 */node_modules
 
 # environment variables
 */*.env
+
+# editor
+*/.idea
