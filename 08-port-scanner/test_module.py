@@ -40,7 +40,7 @@ class UnitTests(unittest.TestCase):
         actual = port_scanner.get_open_ports("scanme.nmap", [22, 42], False)
         expected = "Error: Invalid hostname"
         self.assertEqual(actual, expected, "Expected 'Error: Invalid hostname'")
-  
+
     def test_port_scanner_invalid_ip_address(self):
         actual = port_scanner.get_open_ports("266.255.9.10", [22, 42], False)
         expected = "Error: Invalid IP address"

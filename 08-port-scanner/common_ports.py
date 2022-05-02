@@ -31,3 +31,5 @@ PORTS_AND_SERVICES = {
     8080: 'https-proxy',
     8443: 'https-alt'
 }
+
+UNKNOWN_SERVICE = '(?)'
