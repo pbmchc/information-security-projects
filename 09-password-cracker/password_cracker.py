@@ -24,14 +24,8 @@ def crack_sha1_hash(checked_hash, use_salts=False):
 
 
 def _get_salts():
-    salts = []
-
     with open(KNOWN_SALTS_LIST) as known_salts:
-        for line in known_salts:
-            salt = line.strip()
-            salts.append(salt)
-
-    return salts
+        return [line.strip() for line in known_salts]
 
 
 def _is_matching_password_with_salt(password, salt, checked_hash):
