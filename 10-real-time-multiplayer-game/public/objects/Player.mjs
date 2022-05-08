@@ -1,7 +1,7 @@
 import { DIRECTIONS } from '../constants.mjs';
 
 const DEFAULT_PLAYER_VELOCITY = 5;
-export const PLAYER_SIZE = 20;
+export const PLAYER_SIZE = 25;
 
 class Player {
   constructor({ id, x, y, directions = {}, score = 0 }) {
@@ -19,9 +19,15 @@ class Player {
     if (direction === DIRECTIONS.DOWN) this.y += velocity;
   }
 
-  collision(item) {}
+  collision(collectible) {
+    const { x, y } = collectible;
+    const isHorizontalCollision = this.x <= x && this.x + PLAYER_SIZE >= x;
+    const isVerticalCollision = this.y <= y && this.y + PLAYER_SIZE >= y;
 
-  calculateRank(arr) {}
+    return isHorizontalCollision && isVerticalCollision;
+  }
+
+  calculateRank(players) {}
 }
 
 export default Player;

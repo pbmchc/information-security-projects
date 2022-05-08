@@ -1,4 +1,4 @@
-import { CANVAS_SIZE, DIRECTIONS, DIRECTIONS_WITH_KEYS, EVENTS } from './constants.mjs';
+import { CANVAS_SIZE, DIRECTIONS, DIRECTIONS_WITH_KEYS, EVENTS, GAMES_STATUS } from './constants.mjs';
 import Collectible, { COLLECTIBLE_SIZE } from './objects/Collectible.mjs';
 import Player, { PLAYER_SIZE } from './objects/Player.mjs';
 import { getRandomPosition } from './utils.mjs';
@@ -7,21 +7,21 @@ const socket = io();
 const context = setupCanvas();
 
 socket.on('connect', () => {
-  const mainPlayer = new Player({ id: socket.id, ...getRandomPosition(PLAYER_SIZE) });
-  let state = { players: [mainPlayer], collectible: {} };
+  let mainPlayer;
+  let state = {
+    collectible: {},
+    players: [],
+    status: GAMES_STATUS.INACTIVE
+  };
 
-  socket.emit(EVENTS.NEW_PLAYER, mainPlayer);
+  socket.emit(EVENTS.NEW_PLAYER);
 
   socket.on(EVENTS.GAME_STATE_CHANGE, newState => {
-    const { players } = newState;
-    const otherPlayers = players
-      .filter(player => player.id !== mainPlayer.id)
-      .map(player => new Player(player));
+    const { players: statePlayers } = newState;
+    const players = statePlayers.map(player => new Player(player));
 
-    state = {
-      ...newState,
-      players: [mainPlayer, ...otherPlayers]
-    };
+    mainPlayer = players.find(({ id }) => id === socket.id);
+    state = { ...newState, players };
   });
 
   document.addEventListener('keydown', event => {
@@ -57,19 +57,41 @@ socket.on('connect', () => {
     socket.emit(EVENTS.PLAYER_MOVE, mainPlayer);
   });
  
-  drawGame();
+  renderGame();
 
-  function drawGame() {  
-    const { players, collectible } = state;
+  function renderGame() {
+    const { collectible, players, status } = state;
 
+    if (status === GAMES_STATUS.ACTIVE) {
+      players.forEach(movePlayer);
+
+      if (mainPlayer.collision(collectible)) {
+        socket.emit(EVENTS.PLAYER_COLLECT, { player: mainPlayer, collectible });
+      }
+  
+      drawCanvas();
+      drawCollectible(collectible);
+      players.forEach(drawPlayer);
+    }
+
+    requestAnimationFrame(renderGame);
+  }
+
+  function getDirection(key) {
+    return Object.keys(DIRECTIONS_WITH_KEYS).find(direction => DIRECTIONS_WITH_KEYS[direction].includes(key));
+  }
+
+  function movePlayer(player) {
+    const { id, directions } = player;
+    const activeDirections = Object.keys(directions).filter(key => directions[key]);
+
+    activeDirections.forEach(direction => player.movePlayer(direction));
+  }
+
+  function drawCanvas() {
     context.fillStyle = '#eee';
     context.clearRect(0, 0, CANVAS_SIZE.WIDTH, CANVAS_SIZE.HEIGHT);
     context.fillRect(0, 0, CANVAS_SIZE.WIDTH, CANVAS_SIZE.HEIGHT);
-
-    drawCollectible(collectible);
-    players.forEach(drawPlayer);
-
-    requestAnimationFrame(drawGame);
   }
   
   function drawCollectible(collectible) {
@@ -78,20 +100,13 @@ socket.on('connect', () => {
   }
 
   function drawPlayer(player) {
-    const { directions } = player;
-    const activeDirections = Object.keys(directions).filter(key => directions[key]);
-    const isMainPlayer = player.id === mainPlayer.id;
+    const { id } = player;
+    const isMainPlayer = id === socket.id;
     
-    activeDirections.forEach(direction => player.movePlayer(direction));
     context.fillStyle = isMainPlayer ? '#ff6666' : '#bebebe';
     context.fillRect(player.x, player.y, PLAYER_SIZE, PLAYER_SIZE);
   }
-
-  function getDirection(key) {
-    return Object.keys(DIRECTIONS_WITH_KEYS).find(direction => DIRECTIONS_WITH_KEYS[direction].includes(key));
-  }
 });
-
 
 function setupCanvas() {
   const canvas = document.getElementById('game-canvas');

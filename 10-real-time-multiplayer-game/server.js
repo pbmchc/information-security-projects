@@ -10,8 +10,9 @@ const cors = require('cors');
 const fccTestingRoutes = require('./routes/fcctesting.js');
 const runner = require('./test-runner.js');
 
-const { EVENTS } = require('./public/constants.mjs');
+const { EVENTS, GAMES_STATUS } = require('./public/constants.mjs');
 const { default: Collectible, COLLECTIBLE_SIZE } = require('./public/objects/Collectible.mjs');
+const { default: Player, PLAYER_SIZE } = require('./public/objects/Player.mjs');
 const { getRandomPosition } = require('./public/utils.mjs');
 
 const app = express();
@@ -62,17 +63,20 @@ server.listen(port, () => {
 });
 
 let state = {
+  collectible: createNewCollectible(),
   players: [],
-  collectible: new Collectible(getRandomPosition(COLLECTIBLE_SIZE))
+  status: GAMES_STATUS.INACTIVE
 };
 
 io.on('connection', socket => {
-  socket.on(EVENTS.NEW_PLAYER, player => {
+  socket.on(EVENTS.NEW_PLAYER, () => {
+    const { id } = socket;
     const { players } = state;
 
     state = {
       ...state,
-      players: [...players, player]
+      players: [...players, createNewPlayer(id)],
+      status: GAMES_STATUS.ACTIVE
     };
 
     io.emit(EVENTS.GAME_STATE_CHANGE, state);
@@ -83,7 +87,32 @@ io.on('connection', socket => {
 
     state = {
       ...state,
-      players: players.map(player => player.id === movingPlayer.id ? ({ ...movingPlayer }) : player)
+      players: players.map(
+        player => player.id === movingPlayer.id
+          ? ({ ...movingPlayer })
+          : player
+      )
+    };
+
+    io.emit(EVENTS.GAME_STATE_CHANGE, state);
+  });
+
+  socket.on(EVENTS.PLAYER_COLLECT, ({ player: scoringPlayer, collectible }) => {
+    const { players, collectible: stateCollectible } = state;
+    const isActiveCollectible = stateCollectible.id === collectible.id;
+
+    if (!isActiveCollectible) {
+      return;
+    }
+
+    state = {
+      ...state,
+      collectible: createNewCollectible(),
+      players: players.map(player =>
+        player.id === scoringPlayer.id
+          ? ({ ...scoringPlayer, score: scoringPlayer.score + 1 })
+          : player
+      )
     };
 
     io.emit(EVENTS.GAME_STATE_CHANGE, state);
@@ -101,5 +130,12 @@ io.on('connection', socket => {
   });
 });
 
+function createNewCollectible(id = Date.now()) {
+  return new Collectible({ id: id, ...getRandomPosition(COLLECTIBLE_SIZE) });
+}
+
+function createNewPlayer(id) {
+  return new Player({ id, ...getRandomPosition(PLAYER_SIZE) });
+}
 
 module.exports = app; // For testing

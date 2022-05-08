@@ -20,5 +20,11 @@ export const DIRECTIONS_WITH_KEYS = {
 export const EVENTS = {
   NEW_PLAYER: 'new-player',
   GAME_STATE_CHANGE: 'game-state-change',
+  PLAYER_COLLECT: 'player-collect',
   PLAYER_MOVE: 'player-move'
+};
+
+export const GAMES_STATUS = {
+  ACTIVE: 'active',
+  INACTIVE: 'inactive'
 };
