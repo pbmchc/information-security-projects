@@ -1,5 +1,5 @@
-import Player from '../public/Player.mjs';
-import Collectible from '../public/Collectible.mjs';
+import Collectible from '../public/objects/Collectible.mjs';
+import Player from '../public/objects/Player.mjs';
 
 const chai = require('chai');
 const assert = chai.assert;
