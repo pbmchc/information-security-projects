@@ -27,7 +27,13 @@ class Player {
     return isHorizontalCollision && isVerticalCollision;
   }
 
-  calculateRank(players) {}
+  calculateRank(players) {
+    const playersWithHigherScore = players.filter(({ score }) => score > this.score);
+    const place = playersWithHigherScore.length + 1;
+    const numberOfPlayers = players.length;
+
+    return `Rank: ${place}/${numberOfPlayers}`;
+  }
 }
 
 export default Player;
