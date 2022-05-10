@@ -1,5 +1,6 @@
-import { DIRECTIONS } from '../constants.mjs';
+import { CANVAS_SIZE, DIRECTIONS } from '../constants.mjs';
 
+const { WIDTH: CANVAS_WIDTH, HEIGHT: CANVAS_HEIGHT } = CANVAS_SIZE;
 const DEFAULT_PLAYER_VELOCITY = 5;
 export const PLAYER_SIZE = 25;
 
@@ -13,10 +14,12 @@ class Player {
   }
 
   movePlayer(direction, velocity = DEFAULT_PLAYER_VELOCITY) {
-    if (direction === DIRECTIONS.LEFT) this.x -= velocity;
-    if (direction === DIRECTIONS.UP) this.y -= velocity;
-    if (direction === DIRECTIONS.RIGHT) this.x += velocity;
-    if (direction === DIRECTIONS.DOWN) this.y += velocity;
+    const { x, y } = this;
+
+    if (direction === DIRECTIONS.LEFT) this.x = this._moveBackwards(x, velocity);
+    if (direction === DIRECTIONS.UP) this.y = this._moveBackwards(y, velocity);
+    if (direction === DIRECTIONS.RIGHT) this.x = this._moveForwards(x, velocity, CANVAS_WIDTH);
+    if (direction === DIRECTIONS.DOWN) this.y = this._moveForwards(y, velocity, CANVAS_HEIGHT);
   }
 
   collision(collectible) {
@@ -33,6 +36,18 @@ class Player {
     const numberOfPlayers = players.length;
 
     return `Rank: ${place}/${numberOfPlayers}`;
+  }
+
+  _moveBackwards(position, velocity) {
+    const newPosition = position - velocity;
+
+    return newPosition < 0 ? 0 : newPosition;
+  }
+
+  _moveForwards(position, velocity, canvasSize) {
+    const newPosition = position + velocity;
+
+    return newPosition > canvasSize - PLAYER_SIZE ? canvasSize - PLAYER_SIZE : newPosition;
   }
 }
 
