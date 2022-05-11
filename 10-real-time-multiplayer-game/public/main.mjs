@@ -1,4 +1,12 @@
-import { CANVAS_SIZE, DIRECTIONS, DIRECTIONS_WITH_KEYS, EVENTS, GAMES_STATUS } from './constants.mjs';
+import {
+  CANVAS_BASE_PADDING,
+  CANVAS_FONT_SIZE,
+  CANVAS_SIZE,
+  DIRECTIONS,
+  DIRECTIONS_WITH_KEYS,
+  EVENTS,
+  GAMES_STATUS
+} from './constants.mjs';
 import Collectible, { COLLECTIBLE_SIZE } from './objects/Collectible.mjs';
 import Player, { PLAYER_SIZE } from './objects/Player.mjs';
 import { getRandomPosition } from './utils.mjs';
@@ -70,6 +78,7 @@ socket.on('connect', () => {
       }
   
       drawCanvas();
+      drawCanvasTobBar();
       drawCollectible(collectible);
       players.forEach(drawPlayer);
     }
@@ -92,6 +101,17 @@ socket.on('connect', () => {
     context.fillStyle = '#eee';
     context.clearRect(0, 0, CANVAS_SIZE.WIDTH, CANVAS_SIZE.HEIGHT);
     context.fillRect(0, 0, CANVAS_SIZE.WIDTH, CANVAS_SIZE.HEIGHT);
+  }
+
+  function drawCanvasTobBar() {
+    const { players } = state;
+    const rank = mainPlayer.calculateRank(players);
+    const score = `Score: ${mainPlayer.score}`;
+
+    context.fillStyle = '#777';
+    context.font = `${CANVAS_FONT_SIZE}px 'Press Start 2P'`;
+    context.fillText(score, CANVAS_BASE_PADDING, CANVAS_FONT_SIZE * 2);
+    context.fillText(rank, CANVAS_SIZE.WIDTH - context.measureText(rank).width - CANVAS_BASE_PADDING, CANVAS_FONT_SIZE * 2);
   }
   
   function drawCollectible(collectible) {

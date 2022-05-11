@@ -1,3 +1,6 @@
+export const CANVAS_BASE_PADDING = 8;
+export const CANVAS_FONT_SIZE = 14;
+
 export const CANVAS_SIZE = {
   HEIGHT: 480,
   WIDTH: 640
