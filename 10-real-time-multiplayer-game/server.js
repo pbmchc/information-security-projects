@@ -110,7 +110,7 @@ io.on('connection', socket => {
       collectible: createNewCollectible(),
       players: players.map(player =>
         player.id === scoringPlayer.id
-          ? ({ ...scoringPlayer, score: scoringPlayer.score + 1 })
+          ? ({ ...scoringPlayer, score: scoringPlayer.score + collectible.value })
           : player
       )
     };
@@ -131,7 +131,7 @@ io.on('connection', socket => {
 });
 
 function createNewCollectible(id = Date.now()) {
-  return new Collectible({ id: id, ...getRandomPosition(COLLECTIBLE_SIZE) });
+  return new Collectible({ id, ...getRandomPosition(COLLECTIBLE_SIZE) });
 }
 
 function createNewPlayer(id) {

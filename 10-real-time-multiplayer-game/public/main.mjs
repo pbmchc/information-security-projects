@@ -115,7 +115,7 @@ socket.on('connect', () => {
   }
   
   function drawCollectible(collectible) {
-    context.fillStyle = '#66b2b2';
+    context.fillStyle = collectible.color;
     context.fillRect(collectible.x, collectible.y, COLLECTIBLE_SIZE, COLLECTIBLE_SIZE);
   }
 
