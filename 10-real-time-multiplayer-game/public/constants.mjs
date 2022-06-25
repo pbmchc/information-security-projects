@@ -14,10 +14,10 @@ export const DIRECTIONS = {
 };
 
 export const DIRECTIONS_WITH_KEYS = {
-  [DIRECTIONS.LEFT]: ['ArrowLeft', 'a'],
-  [DIRECTIONS.UP]: ['ArrowUp', 'w'],
-  [DIRECTIONS.RIGHT]: ['ArrowRight', 'd'],
-  [DIRECTIONS.DOWN]: ['ArrowDown', 's']
+  [DIRECTIONS.LEFT]: ['ArrowLeft', 'KeyA'],
+  [DIRECTIONS.UP]: ['ArrowUp', 'KeyW'],
+  [DIRECTIONS.RIGHT]: ['ArrowRight', 'KeyD'],
+  [DIRECTIONS.DOWN]: ['ArrowDown', 'KeyS']
 };
 
 export const EVENTS = {

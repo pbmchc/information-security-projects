@@ -33,8 +33,8 @@ socket.on('connect', () => {
   });
 
   document.addEventListener('keydown', event => {
-    const { key } = event;
-    const direction = getDirection(key);
+    const { code } = event;
+    const direction = getDirection(code);
 
     if (!direction) {
       return;
@@ -53,8 +53,8 @@ socket.on('connect', () => {
   });
 
   document.addEventListener('keyup', event => {
-    const { key } = event;
-    const direction = getDirection(key);
+    const { code } = event;
+    const direction = getDirection(code);
 
     if (!direction) {
       return;
@@ -86,8 +86,8 @@ socket.on('connect', () => {
     requestAnimationFrame(renderGame);
   }
 
-  function getDirection(key) {
-    return Object.keys(DIRECTIONS_WITH_KEYS).find(direction => DIRECTIONS_WITH_KEYS[direction].includes(key));
+  function getDirection(code) {
+    return Object.keys(DIRECTIONS_WITH_KEYS).find(direction => DIRECTIONS_WITH_KEYS[direction].includes(code));
   }
 
   function movePlayer(player) {
