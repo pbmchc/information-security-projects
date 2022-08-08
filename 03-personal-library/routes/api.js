@@ -6,15 +6,7 @@ const mongoose = require('mongoose');
 const bookController = require('../controllers/bookController');
 const {createBookValidator, updateBookCommentsValidator} = require('../validators/bookValidator');
 
-mongoose.connect(
-  process.env.DB,
-  {
-    useCreateIndex: true,
-    useFindAndModify: false,
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
-);
+mongoose.connect(process.env.DB);
 
 module.exports = function (app) {
   app.route('/api/books')
