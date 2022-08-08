@@ -7,14 +7,7 @@ const issueController = require('../controllers/issueController');
 const issueParamsValidator = require('../validators/issueParamsValidator');
 const {createIssueValidator, updateIssueValidator, deleteIssueValidator} = require('../validators/issueValidator');
 
-mongoose.connect(
-  process.env.DB,
-  {
-    useCreateIndex: true,
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  }
-);
+mongoose.connect(process.env.DB);
 
 module.exports = function (app) {
   app.route('/api/issues/:project')
