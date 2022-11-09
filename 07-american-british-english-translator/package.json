@@ -19,7 +19,7 @@
     "express": "^4.17.1",
     "jsdom": "^16.7.0",
     "mocha": "^6.2.3",
-    "nodemon": "^2.0.19"
+    "nodemon": "^2.0.20"
   },
   "license": "MIT"
 }
