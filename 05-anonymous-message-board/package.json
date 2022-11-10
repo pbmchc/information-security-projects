@@ -9,7 +9,7 @@
 		"watch": "nodemon server.js"
 	},
 	"dependencies": {
-		"bcrypt": "5.0.0",
+		"bcrypt": "^5.1.0",
 		"body-parser": "^1.15.2",
 		"chai": "^4.3.7",
 		"chai-http": "^4.3.0",
