@@ -4,8 +4,9 @@
   "description": "An FCC Security Challenge",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js",
-    "test": "cross-env PORT=3005 mocha --require @babel/register --recursive --exit --ui tdd tests/"
+    "start": "node server.js",
+    "test": "cross-env PORT=3005 mocha --require @babel/register --recursive --exit --ui tdd tests/",
+    "watch": "nodemon server.js"
   },
   "dependencies": {
     "@babel/core": "^7.22.8",
@@ -20,7 +21,7 @@
     "jsdom": "^19.0.0",
     "mocha": "^10.1.0",
     "nocache": "^3.0.4",
-    "nodemon": "^2.0.20",
+    "nodemon": "^3.0.1",
     "socket.io": "^4.6.1",
     "socket.io-client": "^4.5.3"
   },
