@@ -1,19 +1,19 @@
 require('dotenv').config();
-const express = require('express');
-const bodyParser = require('body-parser');
-const expect      = require('chai').expect;
+
 const cors        = require('cors');
+const express     = require('express');
+const expect      = require('chai').expect;
+const path        = require('path');
 
 const fccTestingRoutes  = require('./routes/fcctesting.js');
 const runner            = require('./test-runner');
 
 const app = express();
 
-app.use('/public', express.static(process.cwd() + '/public'));
-app.use(cors({origin: '*'}));
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors({origin: '*'})); //For FCC testing purposes only
+app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 app.route('/')
   .get(function (req, res) {
