@@ -1,13 +1,13 @@
 require('dotenv').config();
 
 const http = require('http');
-const express = require('express');
-const bodyParser = require('body-parser');
-const expect = require('chai');
-const { Server } = require('socket.io');
 const cors = require('cors');
+const express = require('express');
 const helmet = require('helmet');
 const nocache = require('nocache');
+const { Server } = require('socket.io');
+const expect = require('chai');
+const path = require('path');
 
 const fccTestingRoutes = require('./routes/fcctesting.js');
 const runner = require('./test-runner.js');
@@ -21,14 +21,12 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-app.use('/public', express.static(process.cwd() + '/public'));
-app.use('/assets', express.static(process.cwd() + '/assets'));
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
 //For FCC testing purposes and enables user to connect from outside the hosting platform
 app.use(cors({ origin: '*' }));
+app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 app.use(nocache());
 app.use(helmet.noSniff());
