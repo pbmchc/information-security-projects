@@ -18,8 +18,8 @@
 		"express-validator": "^6.14.0",
 		"helmet": "^3.1.0",
 		"mocha": "^9.2.2",
-		"mongodb": "^4.8.1",
-		"mongoose": "^6.5.1"
+		"mongodb": "^4.16.0",
+		"mongoose": "^6.11.4"
 	},
 	"devDependencies": {
 		"cross-env": "^7.0.3",

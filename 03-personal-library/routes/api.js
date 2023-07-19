@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const bookController = require('../controllers/bookController');
 const {createBookValidator, updateBookCommentsValidator} = require('../validators/bookValidator');
 
+mongoose.set('strictQuery', false);
 mongoose.connect(process.env.DB);
 
 module.exports = function (app) {
