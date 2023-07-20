@@ -3,11 +3,11 @@
 require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
-const express     = require('express');
-const bodyParser  = require('body-parser');
-const expect      = require('chai').expect;
 const cors        = require('cors');
-const helmet    = require('helmet');
+const express     = require('express');
+const helmet      = require('helmet');
+const expect      = require('chai').expect;
+const path        = require('path');
 
 const apiRoutes         = require('./routes/api.js');
 const fccTestingRoutes  = require('./routes/fcctesting.js');
@@ -17,12 +17,10 @@ const app = express();
 
 app.use(helmet.xssFilter());
 
-app.use('/public', express.static(process.cwd() + '/public'));
-
 app.use(cors({origin: '*'}));
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 app.route('/:project/')
   .get(function (req, res) {

@@ -7,6 +7,7 @@ const issueController = require('../controllers/issueController');
 const issueParamsValidator = require('../validators/issueParamsValidator');
 const {createIssueValidator, updateIssueValidator, deleteIssueValidator} = require('../validators/issueValidator');
 
+mongoose.set('strictQuery', false);
 mongoose.connect(process.env.DB);
 
 module.exports = function (app) {
