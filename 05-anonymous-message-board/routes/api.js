@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const threadController = require('../controllers/threadController');
 const {threadValidator, threadReplyValidator} = require('../validators/validators');
 
+mongoose.set('strictQuery', false);
 mongoose.connect(process.env.DB);
 
 module.exports = function (app) {
@@ -13,6 +14,7 @@ module.exports = function (app) {
     .post(threadValidator, threadController.createThread)
     .put(threadController.reportThread)
     .delete(threadController.deleteThread);
+
   app.route('/api/replies/:board')
     .get(threadController.getSingleThread)
     .post(threadReplyValidator, threadController.createThreadReply)

@@ -3,11 +3,11 @@
 require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
-const express     = require('express');
-const bodyParser  = require('body-parser');
-const expect      = require('chai').expect;
 const cors        = require('cors');
+const express     = require('express');
 const helmet      = require('helmet');
+const expect      = require('chai').expect;
+const path        = require('path');
 
 const apiRoutes         = require('./routes/api.js');
 const fccTestingRoutes  = require('./routes/fcctesting.js');
@@ -21,11 +21,10 @@ app.use(
   helmet.referrerPolicy({policy: 'same-origin'})
 );
 
-app.use('/public', express.static(`${process.cwd()}/public`));
-
 app.use(cors({origin: '*'}));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 app.route('/b/:board/')
   .get(function (_, res) {
