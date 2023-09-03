@@ -18,7 +18,7 @@
 		"helmet": "^3.1.0",
 		"mocha": "^9.2.2",
 		"mongodb": "^4.17.0",
-		"mongoose": "^6.11.4"
+		"mongoose": "^6.12.0"
 	},
 	"devDependencies": {
 		"cross-env": "^7.0.3",
