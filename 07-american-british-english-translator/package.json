@@ -9,9 +9,9 @@
     "watch": "nodemon server.js"
   },
   "dependencies": {
-    "@babel/core": "^7.22.8",
-    "@babel/preset-env": "^7.22.7",
-    "@babel/register": "^7.22.5",
+    "@babel/core": "^7.23.2",
+    "@babel/preset-env": "^7.23.2",
+    "@babel/register": "^7.22.15",
     "chai": "^4.3.7",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
