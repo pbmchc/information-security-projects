@@ -1,11 +1,12 @@
 'use strict';
 
 const PORT = process.env.PORT || 3000;
-var express     = require('express');
-var bodyParser  = require('body-parser');
-var expect      = require('chai').expect;
+
 var cors        = require('cors');
+var express     = require('express');
+var expect      = require('chai').expect;
 const helmet    = require('helmet');
+const path      = require('path');
 
 var apiRoutes         = require('./routes/api.js');
 var fccTestingRoutes  = require('./routes/fcctesting.js');
@@ -16,12 +17,10 @@ var app = express();
 app.use(helmet.xssFilter());
 app.use(helmet.noSniff());
 
-app.use('/public', express.static(process.cwd() + '/public'));
-
 app.use(cors({origin: '*'})); //For FCC testing purposes only
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 //Index page (static HTML)
 app.route('/')
