@@ -15,9 +15,9 @@
     "chai": "^4.3.7",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
-    "express": "^4.21.1",
+    "express": "^4.21.2",
     "jsdom": "^21.1.2",
-    "mocha": "^10.1.0",
+    "mocha": "^10.8.2",
     "nodemon": "^3.0.1"
   },
   "license": "MIT"
