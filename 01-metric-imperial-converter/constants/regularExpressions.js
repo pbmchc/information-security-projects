@@ -1,3 +1,1 @@
-const CHARACTER_REGEX = /[a-zA-Z]/;
-
-module.exports = CHARACTER_REGEX;
+export const CHARACTER_REGEX = /[a-zA-Z]/;

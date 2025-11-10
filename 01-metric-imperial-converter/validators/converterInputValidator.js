@@ -1,28 +1,22 @@
-'use strict';
+import { VALIDATION_ERRORS } from '../constants/validationErrors.js';
 
-const VALIDATION_ERRORS = require('../constants/validationErrors');
-
-const CONVERTER_ERROR_MESSAGES = {
-    ALL: 'invalid number and unit',
-    UNIT: 'invalid unit',
-    VALUE: 'invalid number'
+export const CONVERTER_ERRORS = {
+  ALL: 'invalid number and unit',
+  UNIT: 'invalid unit',
+  VALUE: 'invalid number',
 };
 
-function validate(value, unit) {
+export class ConverterInputValidator {
+  validate(value, unit) {
     const errors = {
-        value: value === VALIDATION_ERRORS.INVALID,
-        unit: unit === VALIDATION_ERRORS.INVALID
+      value: value === VALIDATION_ERRORS.INVALID,
+      unit: unit === VALIDATION_ERRORS.INVALID,
     };
 
-    if(errors.value && errors.unit) {
-        return {error: CONVERTER_ERROR_MESSAGES.ALL};
-    }
+    if (errors.value && errors.unit) return { error: CONVERTER_ERRORS.ALL };
+    if (errors.value) return { error: CONVERTER_ERRORS.VALUE };
+    if (errors.unit) return { error: CONVERTER_ERRORS.UNIT };
 
-    if(errors.value) {
-        return {error: CONVERTER_ERROR_MESSAGES.VALUE};
-    }
-
-    return errors.unit ? {error: CONVERTER_ERROR_MESSAGES.UNIT} : null;
+    return null;
+  }
 }
-
-module.exports = {validate, CONVERTER_ERROR_MESSAGES};

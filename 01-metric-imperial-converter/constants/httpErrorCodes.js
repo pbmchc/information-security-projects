@@ -1,5 +1,4 @@
-const HTTP_ERROR_CODES = {
-    BAD_REQUEST: 400
+export const HTTP_ERROR_CODES = {
+  BAD_REQUEST: 400,
+  NOT_FOUND: 404,
 };
-
-module.exports = HTTP_ERROR_CODES;

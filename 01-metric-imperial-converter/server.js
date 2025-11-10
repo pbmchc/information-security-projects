@@ -1,61 +1,48 @@
-'use strict';
+import cors from 'cors';
+import express from 'express';
+import helmet from 'helmet';
+
+import { HTTP_ERROR_CODES } from './constants/httpErrorCodes.js';
+import { setupRoutes } from './routes/api.js';
+import { setupTestingRoutes } from './routes/fcctesting.js';
+import runner from './test-runner.js';
 
 const PORT = process.env.PORT || 3000;
 
-var cors        = require('cors');
-var express     = require('express');
-var expect      = require('chai').expect;
-const helmet    = require('helmet');
-const path      = require('path');
-
-var apiRoutes         = require('./routes/api.js');
-var fccTestingRoutes  = require('./routes/fcctesting.js');
-var runner            = require('./test-runner');
-
 var app = express();
 
-app.use(helmet.xssFilter());
 app.use(helmet.noSniff());
+app.use(helmet.xssFilter());
 
-app.use(cors({origin: '*'})); //For FCC testing purposes only
-app.use('/public', express.static(path.join(__dirname, 'public')));
-app.use(express.urlencoded({ extended: false }));
+app.use(cors({ origin: '*' })); // For FCC testing purposes
 app.use(express.json());
+app.use(express.static('public'));
+app.use(express.urlencoded({ extended: false }));
 
-//Index page (static HTML)
-app.route('/')
-  .get(function (req, res) {
-    res.sendFile(process.cwd() + '/views/index.html');
-  });
-
-//For FCC testing purposes
-fccTestingRoutes(app);
-
-//Routing for API 
-apiRoutes(app);  
-    
-//404 Not Found Middleware
-app.use(function(req, res, next) {
-  res.status(404)
-    .type('text')
-    .send('Not Found');
+app.route('/').get(function (_, res) {
+  res.sendFile('views/index.html', { root: import.meta.dirname });
 });
 
-//Start our server and tests!
+setupTestingRoutes(app); // For FCC testing purposes
+setupRoutes(app);
+
+app.use(function (_req, res, _next) {
+  res.status(HTTP_ERROR_CODES.NOT_FOUND).type('txt').send('Not Found');
+});
+
 app.listen(PORT, function () {
   console.log(`Listening on port: ${PORT}`);
-  if(process.env.NODE_ENV==='test') {
+  if (process.env.NODE_ENV === 'test') {
     console.log('Running Tests...');
     setTimeout(function () {
       try {
         runner.run();
-      } catch(e) {
-        var error = e;
-          console.log('Tests are not valid:');
-          console.log(error);
+      } catch (err) {
+        console.log('Error while running tests:');
+        console.log(err);
       }
     }, 1500);
   }
 });
 
-module.exports = app; //for testing
+export default app; // For FCC testing purposes
