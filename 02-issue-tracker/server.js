@@ -1,57 +1,48 @@
-'use strict';
+import 'dotenv/config';
 
-require('dotenv').config();
+import cors from 'cors';
+import express from 'express';
+import helmet from 'helmet';
+
+import { HTTP_ERROR_CODES } from './constants/httpErrorCodes.js';
+import { setupRoutes } from './routes/api.js';
+import { setupTestingRoutes } from './routes/fcctesting.js';
+import runner from './test-runner.js';
 
 const PORT = process.env.PORT || 3000;
-const cors        = require('cors');
-const express     = require('express');
-const helmet      = require('helmet');
-const expect      = require('chai').expect;
-const path        = require('path');
-
-const apiRoutes         = require('./routes/api.js');
-const fccTestingRoutes  = require('./routes/fcctesting.js');
-const runner            = require('./test-runner');
 
 const app = express();
 
 app.use(helmet.xssFilter());
 
-app.use(cors({origin: '*'}));
-app.use('/public', express.static(path.join(__dirname, 'public')));
-app.use(express.urlencoded({ extended: false }));
+app.use(cors({ origin: '*' })); // For FCC testing purposes
 app.use(express.json());
+app.use('/static', express.static('public'));
+app.use(express.urlencoded({ extended: false }));
 
-app.route('/:project/')
-  .get(function (req, res) {
-    res.sendFile(process.cwd() + '/views/issue.html');
-  });
-
-app.route('/')
-  .get(function (req, res) {
-    res.sendFile(process.cwd() + '/views/index.html');
-  });
-
-fccTestingRoutes(app);
-
-apiRoutes(app);  
-    
-app.use(function(req, res, next) {
-  res.status(404)
-    .type('text')
-    .send('Not Found');
+app.route('/:project/').get(function (_, res) {
+  res.sendFile('views/issue.html', { root: import.meta.dirname });
 });
 
-app.use((err, req, res, next) => {
+app.route('/').get(function (_, res) {
+  res.sendFile('views/index.html', { root: import.meta.dirname });
+});
+
+setupTestingRoutes(app); // For FCC testing purposes
+setupRoutes(app);
+
+app.use(function (_req, res, _next) {
+  res.status(HTTP_ERROR_CODES.NOT_FOUND).type('txt').send('Not Found');
+});
+
+app.use((err, _req, res, _next) => {
   let errCode, errMessage;
 
   if (err.errors) {
-    errCode = 400;
-    const keys = Object.keys(err.errors);
-
-    errMessage = err.errors[keys[0]].message;
+    errCode = HTTP_ERROR_CODES.BAD_REQUEST;
+    errMessage = err.errors[Object.keys(err.errors)[0]].message;
   } else {
-    errCode = err.status || 500;
+    errCode = err.status || HTTP_ERROR_CODES.INTERNAL_SERVER_ERROR;
     errMessage = err.message || 'Internal Server Error';
   }
 
@@ -60,18 +51,17 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, function () {
   console.log(`Listening on port ${PORT}`);
-  if(process.env.NODE_ENV==='test') {
+  if (process.env.NODE_ENV === 'test') {
     console.log('Running Tests...');
     setTimeout(function () {
       try {
         runner.run();
-      } catch(e) {
-        var error = e;
-          console.log('Tests are not valid:');
-          console.log(error);
+      } catch (err) {
+        console.log('Error while running tests:');
+        console.log(err);
       }
     }, 3500);
   }
 });
 
-module.exports = app;
+export default app; // For FCC testing purposes

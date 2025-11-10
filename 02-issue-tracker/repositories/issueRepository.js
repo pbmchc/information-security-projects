@@ -1,62 +1,57 @@
-'use strict';
-
-const Issue = require('../models/issue');
-const {assignDateConditions} = require('../utils/validatorUtils');
+import { Issue } from '../models/issue.js';
+import { assignDateConditions } from '../utils/dateUtils.js';
+import { CustomError } from '../utils/errorUtils.js';
 
 const ISSUE_DATE_FIELDS = ['created_on', 'updated_on'];
-const FETCHING_ISSUES_ERROR_MESSAGE = 'Error while fetching issues';
-const SAVING_ISSUE_ERROR_MESSAGE = 'Error while saving issue';
-const UPDATING_ISSUE_ERROR_MESSAGE = (id) => `Could not update ${id}`;
-const UPDATING_ISSUE_SUCCESS_MESSAGE = (id) => `Successfully updated ${id}`;
-const DELETING_ISSUE_ERROR_MESSAGE = (id) => `Could not delete ${id}`;
-const DELETING_ISSUE_SUCCESS_MESSAGE = (id) => `Deleted ${id}`;
+const ISSUE_DELETE_ERROR = (id) => `Could not delete ${id}`;
+const ISSUE_DELETE_SUCCESS = (id) => `Deleted ${id}`;
+const ISSUE_SAVE_ERROR = 'Error while saving issue';
+const ISSUE_UPDATE_ERROR = (id) => `Could not update ${id}`;
+const ISSUE_UPDATE_SUCCESS = (id) => `Successfully updated ${id}`;
+const ISSUES_GET_ERROR = 'Error while fetching issues';
 
-function createIssue(issue, done) {
-    const newIssue = new Issue(issue);
+export async function createIssue(input) {
+  const issue = new Issue(input);
 
-    newIssue.save((err, result) => {
-        if(err) {
-            return done({ msg: SAVING_ISSUE_ERROR_MESSAGE });
-        }
-
-        done(null, result);
-    });
+  try {
+    const result = await issue.save(input);
+    return result;
+  } catch {
+    throw new CustomError(ISSUE_SAVE_ERROR);
+  }
 }
 
-function updateIssue(issue, done) {
-    const {_id} = issue;
-    const updatedIssue = {...issue, updated_on: Date.now()};
+export async function updateIssue(input) {
+  const { _id } = input;
 
-    Issue.updateOne({_id}, updatedIssue, (err) =>
-        err
-            ? done({msg: UPDATING_ISSUE_ERROR_MESSAGE(_id)})
-            : done(null, UPDATING_ISSUE_SUCCESS_MESSAGE(_id)));
+  try {
+    await Issue.updateOne({ _id }, { ...input, updated_on: Date.now() });
+    return ISSUE_UPDATE_SUCCESS(_id);
+  } catch {
+    throw new CustomError(ISSUE_UPDATE_ERROR(_id));
+  }
 }
 
-function deleteIssue(issue, done) {
-    const {_id} = issue;
+export async function deleteIssue(input) {
+  const { _id } = input;
 
-    Issue.deleteOne(issue, (err) =>
-        err
-            ? done({msg: DELETING_ISSUE_ERROR_MESSAGE(_id)})
-            : done(null, DELETING_ISSUE_SUCCESS_MESSAGE(_id)));
+  try {
+    await Issue.deleteOne(input);
+    return ISSUE_DELETE_SUCCESS(_id);
+  } catch {
+    throw new Error(ISSUE_DELETE_ERROR(_id));
+  }
 }
 
-function getIssues(conditions, done) {
-    ISSUE_DATE_FIELDS.forEach(field => assignDateConditions(field, conditions));
+export async function getIssues(conditions) {
+  ISSUE_DATE_FIELDS.forEach((field) => assignDateConditions(field, conditions));
 
-    const query = Issue.find(conditions);
+  const query = Issue.find(conditions);
 
-    query.exec((err, result) => {
-        if (err) {
-            return done({msg: FETCHING_ISSUES_ERROR_MESSAGE});
-        }
-
-        done(null, result);
-    })
+  try {
+    const results = await query.exec();
+    return results;
+  } catch {
+    throw new CustomError(ISSUES_GET_ERROR);
+  }
 }
-
-exports.createIssue = createIssue;
-exports.updateIssue = updateIssue;
-exports.deleteIssue = deleteIssue;
-exports.getIssues = getIssues;

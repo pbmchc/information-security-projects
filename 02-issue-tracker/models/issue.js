@@ -1,45 +1,40 @@
-'use strict';
-
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
-const issueSchema = new Schema({
-    project: {
-        type: String,
-        required: true
-    },
-    issue_title: {
-        type: String,
-        required: true
-    },
-    issue_text: {
-        type: String,
-        required: true
-    },
-    created_by: {
-        type: String,
-        required: true
-    },
-    assigned_to: {
-        type: String
-    },
-    status_text: {
-        type: String
-    },
-    created_on: {
-        type: Date,
-        default: Date.now()
-    },
-    updated_on: {
-        type: Date,
-        default: Date.now()
-    },
-    open: {
-        type: Boolean,
-        default: true
-    }
+const IssueSchema = new Schema({
+  project: {
+    type: String,
+    required: true,
+  },
+  issue_title: {
+    type: String,
+    required: true,
+  },
+  issue_text: {
+    type: String,
+    required: true,
+  },
+  created_by: {
+    type: String,
+    required: true,
+  },
+  assigned_to: {
+    type: String,
+  },
+  status_text: {
+    type: String,
+  },
+  created_on: {
+    type: Date,
+    default: Date.now(),
+  },
+  updated_on: {
+    type: Date,
+    default: Date.now(),
+  },
+  open: {
+    type: Boolean,
+    default: true,
+  },
 });
-const Issue = mongoose.model('Issue', issueSchema);
-
-module.exports = Issue;
-
+export const Issue = mongoose.model('Issue', IssueSchema);

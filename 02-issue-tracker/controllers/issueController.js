@@ -1,83 +1,72 @@
-'use strict';
+import { validationResult } from 'express-validator';
 
-const issueRepository = require('../repositories/issueRepository');
-const {prepareErrorPayload} = require('../helpers/errorHelper');
-const {validationResult} = require('express-validator');
+import * as issueRepository from '../repositories/issueRepository.js';
+import { toHttpError, toValidationError } from '../utils/errorUtils.js';
 
-function createIssue(req, res, next) {
-    const {errors: [err]} = validationResult(req);
+export async function createIssue(req, res, next) {
+  const { errors } = validationResult(req);
+  if (errors.length > 0) {
+    return next({ errors: errors.map((err) => toValidationError(err)) });
+  }
 
-    if(err) {
-        return next(prepareErrorPayload(err.msg));
-    }
+  try {
+    const {
+      body,
+      params: { project },
+    } = req;
+    const result = await issueRepository.createIssue({ ...body, project });
 
-    const {body, params: {project}} = req;
-    const issue = {...body, project};
-
-    issueRepository.createIssue(issue, (err, result) => {
-        if(err) {
-            return next(prepareErrorPayload(err.msg));
-        }
-
-        res.json(result);
-    });
+    return res.json(result);
+  } catch (err) {
+    return next(toHttpError(err));
+  }
 }
 
-function updateIssue(req, res, next) {
-    const {body} = req;
-    const {errors: [err]} = validationResult(req);
+export async function updateIssue(req, res, next) {
+  const { errors } = validationResult(req);
+  if (errors.length > 0) {
+    return next({ errors: errors.map((err) => toValidationError(err)) });
+  }
 
-    if(err) {
-        return next(prepareErrorPayload(err.msg));
-    }
+  try {
+    const { body } = req;
+    const result = await issueRepository.updateIssue(body);
 
-    issueRepository.updateIssue(body, (err, result) => {
-        if(err) {
-            return next(prepareErrorPayload(err.msg));
-        }
-
-        res.send(result);
-    });
+    return res.send(result);
+  } catch {
+    return next(toHttpError(err));
+  }
 }
 
-function deleteIssue(req, res, next) {
-    const {errors: [err]} = validationResult(req);
+export async function deleteIssue(req, res, next) {
+  const { errors } = validationResult(req);
+  if (errors.length > 0) {
+    return next({ errors: errors.map((err) => toValidationError(err)) });
+  }
 
-    if(err) {
-        return next(prepareErrorPayload(err.msg));
-    }
+  try {
+    const { body } = req;
+    const result = await issueRepository.deleteIssue(body);
 
-    const {body} = req;
-
-    issueRepository.deleteIssue(body, (err, result) => {
-        if(err) {
-            return next(prepareErrorPayload(err.msg));
-        }
-
-        res.send(result);
-    });
+    return res.send(result);
+  } catch {
+    return next(toHttpError(err));
+  }
 }
 
-function getIssues(req, res, next) {
-    const {errors: [err]} = validationResult(req);
+export async function getIssues(req, res, next) {
+  const { errors } = validationResult(req);
+  if (errors.length > 0) {
+    return next({ errors: errors.map((err) => toValidationError(err)) });
+  }
 
-    if (err) {
-        return next(prepareErrorPayload(err.msg));
-    }
+  try {
+    const { params, query } = req;
+    const conditions = { ...params, ...query };
+    const result = await issueRepository.getIssues(conditions);
 
-    const {params, query} = req;
-    const conditions = {...params, ...query};
-
-    issueRepository.getIssues(conditions, (err, result) => {
-        if (err) {
-            return next(errorHandler.prepareErrorPayload(err.msg));
-        }
-
-        res.json(result);
-    });
+    return res.json(result);
+  } catch {
+    return next(toHttpError(err));
+  }
 }
-
-exports.createIssue = createIssue;
-exports.updateIssue = updateIssue;
-exports.deleteIssue = deleteIssue;
-exports.getIssues = getIssues;

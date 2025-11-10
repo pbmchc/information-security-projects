@@ -1,19 +1,21 @@
-'use strict';
+import mongoose from 'mongoose';
 
-var expect = require('chai').expect;
-const mongoose = require('mongoose');
-
-const issueController = require('../controllers/issueController');
-const issueParamsValidator = require('../validators/issueParamsValidator');
-const {createIssueValidator, updateIssueValidator, deleteIssueValidator} = require('../validators/issueValidator');
+import * as issueController from '../controllers/issueController.js';
+import { createIssuesParamsValidationChain } from '../validators/issuesParamsValidator.js';
+import {
+  createIssueCreationValidationChain,
+  createIssueUpdateValidationChain,
+  createIssueDeletionValidationChain,
+} from '../validators/issueValidator.js';
 
 mongoose.set('strictQuery', false);
 mongoose.connect(process.env.DB);
 
-module.exports = function (app) {
-  app.route('/api/issues/:project')
-    .get(issueParamsValidator, issueController.getIssues)
-    .post(createIssueValidator, issueController.createIssue)
-    .put(updateIssueValidator, issueController.updateIssue)
-    .delete(deleteIssueValidator, issueController.deleteIssue);
+export const setupRoutes = (app) => {
+  app
+    .route('/api/issues/:project')
+    .get(createIssuesParamsValidationChain(), issueController.getIssues)
+    .post(createIssueCreationValidationChain(), issueController.createIssue)
+    .put(createIssueUpdateValidationChain(), issueController.updateIssue)
+    .delete(createIssueDeletionValidationChain(), issueController.deleteIssue);
 };
