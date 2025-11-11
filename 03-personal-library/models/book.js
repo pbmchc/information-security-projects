@@ -1,18 +1,14 @@
-'use strict';
-
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
-const bookSchema = new Schema({
-    title: {
-        type: String,
-        required: true
-    },
-    comments: {
-        type: [String],
-        default: []
-    }
+const BookSchema = new Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+  comments: {
+    type: [String],
+    default: [],
+  },
 });
-const Book = mongoose.model('Book', bookSchema);
-
-module.exports = Book;
+export const Book = mongoose.model('Book', BookSchema);

@@ -1,25 +1,23 @@
-'use strict';
+import { body } from 'express-validator';
 
-const {body} = require('express-validator');
-const {createErrorMessage} = require('../helpers/errorHelper');
+import { toValidationErrorMessage } from '../utils/errorUtils.js';
 
-const MISSING_REQUIRED_ERROR = 'Missing required field';
+const MISSING_REQUIRED_FIELD_ERROR = 'Missing required field';
 
-const createBookValidator = [
+export const createBookValidationChain = () => {
+  return [
     body(['title'])
-        .not()
-        .isEmpty()
-        .withMessage((_, {path}) =>
-            createErrorMessage(MISSING_REQUIRED_ERROR, path))
-];
+      .not()
+      .isEmpty()
+      .withMessage((_, { path }) => toValidationErrorMessage(path, MISSING_REQUIRED_FIELD_ERROR)),
+  ];
+};
 
-const updateBookCommentsValidator = [
+export const createBookCommentsValidationChain = () => {
+  return [
     body(['comment'])
-        .not()
-        .isEmpty()
-        .withMessage((_, {path}) =>
-            createErrorMessage(MISSING_REQUIRED_ERROR, path))
-];
-
-exports.createBookValidator = createBookValidator;
-exports.updateBookCommentsValidator = updateBookCommentsValidator;
+      .not()
+      .isEmpty()
+      .withMessage((_, { path }) => toValidationErrorMessage(path, MISSING_REQUIRED_FIELD_ERROR)),
+  ];
+};

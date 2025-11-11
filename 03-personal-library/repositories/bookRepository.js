@@ -1,98 +1,85 @@
-'use strict';
+import { Book } from '../models/book.js';
+import { CustomError, CUSTOM_ERROR_TYPES } from '../utils/errorUtils.js';
 
-const Book = require('../models/book');
+const BOOK_DELETE_ERROR = 'Error while deleting book';
+const BOOK_DELETE_SUCCESS = 'Delete successful';
+const BOOK_GET_BY_ID_ERROR = 'Error while fetching book';
+const BOOK_NOT_FOUND_ERROR = 'No book exists';
+const BOOK_SAVE_ERROR = 'Error while saving book';
+const BOOK_UPDATE_COMMENTS_ERROR = 'Error while updating comments';
+const BOOKS_DELETE_ERROR = 'Error while deleting books';
+const BOOKS_DELETE_SUCCESS = 'Complete delete successful';
+const BOOKS_GET_ERROR = 'Error while fetching books';
 
-const SAVING_BOOK_ERROR_MESSAGE = 'Error while saving book';
-const FETCHING_BOOKS_ERROR_MESSAGE = 'Error while fetching books';
-const FETCHING_BOOK_ERROR_MESSAGE = 'Error while fetching book';
-const FETCHING_BOOK_MISSING_MESSAGE = 'No book exists';
-const DELETING_BOOK_SUCCESS_MESSAGE = 'Delete successful';
-const DELETING_BOOK_ERROR_MESSAGE = 'Error while deleting book';
-const DELETING_BOOKS_ERROR_MESSAGE = 'Error while deleting books';
-const DELETING_BOOKS_SUCCESS_MESSAGE = 'Complete delete successful';
-const UPDATING_BOOK_COMMENTS_ERROR_MESSAGE = 'Error while updating comments';
-
-function createBook(book, done) {
-    const newBook = new Book(book);
-
-    newBook.save((err, result) => {
-        if(err) {
-            return done({msg: SAVING_BOOK_ERROR_MESSAGE});
-        }
-
-        done(null, _mapSingleBook(result));
-    });
+function toSingleBook({ _id, title, comments }) {
+  return { _id, title, comments };
 }
 
-function getBookById(id, done) {
-    Book.exists({_id: id}, (_, result) => {
-        if(!result) {
-            return done({msg: FETCHING_BOOK_MISSING_MESSAGE});
-        }
+export async function getBookById(id) {
+  try {
+    const result = await Book.findById(id);
+    if (!result) {
+      throw new CustomError(BOOK_NOT_FOUND_ERROR, CUSTOM_ERROR_TYPES.NOT_FOUND);
+    }
 
-        Book.findById(id, (err, result) => {
-            if(err) {
-                return done({msg: FETCHING_BOOK_ERROR_MESSAGE}); 
-            }
-
-            done(null, _mapSingleBook(result));
-        });
-    });
+    return toSingleBook(result);
+  } catch (err) {
+    if (err instanceof CustomError) throw err;
+    throw new CustomError(BOOK_GET_BY_ID_ERROR);
+  }
 }
 
-function deleteBook({id}, done) {
-    Book.deleteOne({_id: id}, err =>
-        err
-            ? done({msg: DELETING_BOOK_ERROR_MESSAGE})
-            : done(null, DELETING_BOOK_SUCCESS_MESSAGE)
+export async function createBook(input) {
+  const book = new Book(input);
+
+  try {
+    const result = await book.save();
+    return toSingleBook(result);
+  } catch {
+    throw new CustomError(BOOK_SAVE_ERROR);
+  }
+}
+
+export async function updateBookComments({ id }, { comment }) {
+  try {
+    const result = await Book.findByIdAndUpdate(
+      id,
+      { $push: { comments: comment } },
+      { new: true }
     );
+    return toSingleBook(result);
+  } catch (err) {
+    throw new CustomError(BOOK_UPDATE_COMMENTS_ERROR);
+  }
 }
 
-function updateBookComments({id}, {comment}, done) {
-    Book.findByIdAndUpdate(id, {$push: {comments: comment}}, {new: true}, (err, result) => {
-        if(err) {
-            return done({msg: UPDATING_BOOK_COMMENTS_ERROR_MESSAGE});
-        }
-
-        done(null, _mapSingleBook(result));
-    });
+export async function deleteBook({ id }) {
+  try {
+    await Book.deleteOne({ _id: id });
+    return BOOK_DELETE_SUCCESS;
+  } catch (err) {
+    throw new CustomError(BOOK_DELETE_ERROR);
+  }
 }
 
-function getBooks(done) {
-    Book.find({}, (err, result) => {
-        if(err) {
-            return done({msg: FETCHING_BOOKS_ERROR_MESSAGE});
-        }
-
-        done(null, result.map(_mapBooks));
-    });
+export async function getBooks() {
+  try {
+    const results = await Book.find({});
+    return results.map(({ _id, title, comments }) => ({
+      _id,
+      title,
+      commentcount: comments.length,
+    }));
+  } catch {
+    throw new CustomError(BOOKS_GET_ERROR);
+  }
 }
 
-function deleteBooks(done) {
-    Book.deleteMany({}, (err) =>
-        err ? done({msg: DELETING_BOOKS_ERROR_MESSAGE})
-            : done(null, DELETING_BOOKS_SUCCESS_MESSAGE));
+export async function deleteBooks() {
+  try {
+    await Book.deleteMany({});
+    return BOOKS_DELETE_SUCCESS;
+  } catch {
+    throw new CustomError(BOOKS_DELETE_ERROR);
+  }
 }
-
-function _mapSingleBook({_id, title, comments}) {
-    return ({
-        _id,
-        title,
-        comments
-    });
-}
-
-function _mapBooks({_id, title, comments}) {
-    return ({
-        _id,
-        title,
-        commentcount: comments.length
-    });
-}
-
-exports.createBook = createBook;
-exports.getBookById = getBookById;
-exports.deleteBook = deleteBook;
-exports.updateBookComments = updateBookComments;
-exports.getBooks = getBooks;
-exports.deleteBooks = deleteBooks;

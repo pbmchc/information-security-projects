@@ -1,88 +1,74 @@
-'use strict';
+import { validationResult } from 'express-validator';
 
-const {validationResult} = require('express-validator');
-const {prepareErrorPayload} = require('../helpers/errorHelper');
-const bookRepository = require('../repositories/bookRepository');
+import * as bookRepository from '../repositories/bookRepository.js';
+import { toHttpError, toValidationError } from '../utils/errorUtils.js';
 
-function addBook(req, res, next) {
-    const {body} = req;
-    const {errors: [err]} = validationResult(req);
+export async function getSingleBook({ params }, res, next) {
+  try {
+    const { id } = params;
+    const result = await bookRepository.getBookById(id);
 
-    if(err) {
-        return next(prepareErrorPayload(err.msg));
-    }
-
-    bookRepository.createBook(body, (err, result) => {
-        if(err) {
-            return next(prepareErrorPayload(err.msg));
-        }
-
-        res.json(result);
-    });
+    return res.json(result);
+  } catch (err) {
+    return next(toHttpError(err));
+  }
 }
 
-function getSingleBook({params}, res, next) {
-    const {id} = params;
+export async function addBook(req, res, next) {
+  const { errors } = validationResult(req);
+  if (errors.length > 0) {
+    return next({ errors: errors.map((err) => toValidationError(err)) });
+  }
 
-    bookRepository.getBookById(id, (err, result) => {
-        if(err) {
-            return next(prepareErrorPayload(err.msg));
-        }
+  try {
+    const { body } = req;
+    const result = await bookRepository.createBook(body);
 
-        res.json(result);
-    });
+    return res.json(result);
+  } catch (err) {
+    return next(toHttpError(err));
+  }
 }
 
-function deleteBook({params}, res, next) {
-    bookRepository.deleteBook(params, (err, result) => {
-        if(err) {
-            return next(prepareErrorPayload(err.msg));
-        }
+export async function updateBookComments(req, res, next) {
+  const { errors } = validationResult(req);
+  if (errors.length > 0) {
+    return next({ errors: errors.map((err) => toValidationError(err)) });
+  }
 
-        res.send(result);
-    });
+  try {
+    const { body, params } = req;
+    const result = await bookRepository.updateBookComments(params, body);
+
+    return res.json(result);
+  } catch (err) {
+    return next(toHttpError(err));
+  }
 }
 
-function updateBookComments(req, res, next) {
-    const {body, params} = req;
-    const {errors: [err]} = validationResult(req);
-
-    if(err) {
-        return next(prepareErrorPayload(err.msg));
-    }
-
-    bookRepository.updateBookComments(params, body, (err, result) => {
-        if(err) {
-            return next(prepareErrorPayload(err.msg));
-        }
-
-        res.json(result);
-    });
+export async function deleteBook({ params }, res, next) {
+  try {
+    const result = await bookRepository.deleteBook(params);
+    return res.send(result);
+  } catch (err) {
+    return next(toHttpError(err));
+  }
 }
 
-function getBooks(_, res, next) {
-    bookRepository.getBooks((err, result) => {
-        if(err) {
-            return next(prepareErrorPayload(err.msg));
-        }
-
-        res.json(result);
-    });
+export async function getBooks(_req, res, next) {
+  try {
+    const result = await bookRepository.getBooks();
+    return res.json(result);
+  } catch (err) {
+    return next(toHttpError(err));
+  }
 }
 
-function deleteBooks(_, res, next) {
-    bookRepository.deleteBooks((err, result) => {
-        if(err) {
-            return next(prepareErrorPayload(err.msg));
-        }
-
-        res.send(result);
-    });
+export async function deleteBooks(_req, res, next) {
+  try {
+    const result = await bookRepository.deleteBooks();
+    return res.send(result);
+  } catch (err) {
+    return next(toHttpError(err));
+  }
 }
-
-exports.addBook = addBook;
-exports.getSingleBook = getSingleBook;
-exports.deleteBook = deleteBook;
-exports.updateBookComments = updateBookComments;
-exports.getBooks = getBooks;
-exports.deleteBooks = deleteBooks;
