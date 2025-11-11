@@ -1,18 +1,14 @@
-'use strict';
-
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
-const tickerSchema = new Schema({
-    symbol: {
-        type: String,
-        required: true
-    },
-    likes: {
-        type: [String],
-        default: []
-    }
+const TickerSchema = new Schema({
+  symbol: {
+    type: String,
+    required: true,
+  },
+  likes: {
+    type: [String],
+    default: [],
+  },
 });
-const Ticker = mongoose.model('Ticker', tickerSchema);
-
-module.exports = Ticker;
+export const Ticker = mongoose.model('Ticker', TickerSchema);

@@ -1,13 +1,10 @@
-'use strict';
+import mongoose from 'mongoose';
 
-const mongoose = require('mongoose');
-
-const stockController = require('../controllers/stockController');
+import * as stockController from '../controllers/stockController.js';
 
 mongoose.set('strictQuery', false);
 mongoose.connect(process.env.DB);
 
-module.exports = function (app) {
-  app.route('/api/stock-prices')
-    .get(stockController.getStock);
+export const setupRoutes = (app) => {
+  app.route('/api/stock-prices').get(stockController.getStock);
 };

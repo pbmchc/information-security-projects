@@ -1,5 +1,3 @@
-function mapToBoolean(value) {
-    return value === 'false' ? false : Boolean(value);
+export function toBoolean(value) {
+  return value === 'false' ? false : Boolean(value);
 }
-
-exports.mapToBoolean = mapToBoolean;

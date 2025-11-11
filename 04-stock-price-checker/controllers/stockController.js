@@ -1,85 +1,59 @@
-const axios = require('axios').default;
+import axios from 'axios';
 
-const stockRepository = require('../repositories/stockRepository');
-const {prepareErrorPayload} = require('../helpers/errorHelper');
-const {validateStockRecords} = require('../validators/stockValidator');
-const {mapToBoolean} = require('../utils/booleanUtils');
+import * as stockRepository from '../repositories/stockRepository.js';
+import { toBoolean } from '../utils/booleanUtils.js';
+import { toHttpError } from '../utils/errorUtils.js';
+import { validateStockRatings } from '../validators/stockValidator.js';
 
-const STOCK_FETCHING_ERROR = 'Error while fetching stock';
+async function toSingleStockTicker(rating, ip) {
+  const { symbol: stock, latestPrice: price } = rating;
+  const {
+    likes: { length },
+  } = await stockRepository.findTicker(stock, ip);
 
-async function getStock({connection, query: {stock, like}}, res, next) {
-    const ip = mapToBoolean(like) ? connection.remoteAddress : null;
-    const tickers = Array.isArray(stock) ? stock : [stock];
+  return { stockData: { stock, price, likes: length } };
+}
 
-    try {
-        const records = await Promise.all(tickers.map(async ticker => {
-            const { data } = await axios.get(_getStockRequestUrl(ticker));
-            return data;
-        }));
+async function toPairOfStockTickers(ratings, ip) {
+  const stockTickers = await Promise.all(ratings.map((rating) => toSingleStockTicker(rating, ip)));
 
-        const validationError = validateStockRecords(records, tickers);
+  return {
+    stockData: stockTickers.map(({ stockData: { stock, price, likes } }, index, arr) => {
+      const {
+        stockData: { likes: otherStockLikes },
+      } = index ? arr[0] : arr[1];
 
-        if(validationError) {
-            return next(prepareErrorPayload(validationError));
-        }
+      return { stock, price, rel_likes: likes - otherStockLikes };
+    }),
+  };
+}
 
-        _sendStockData(records, ip, res, next);
-    } catch(err) {
-        next(prepareErrorPayload(STOCK_FETCHING_ERROR));
+export async function getStock({ connection, query: { stock, like } }, res, next) {
+  const ip = toBoolean(like) ? connection.remoteAddress : null;
+  const tickers = Array.isArray(stock) ? stock.slice(0, 2) : [stock];
+
+  try {
+    const ratings = await Promise.all(
+      tickers.map(async (ticker) => {
+        const tickerUrl = `${process.env.STOCK_API}/stock/${ticker.toLowerCase()}/quote`;
+        const { data: tickerData } = await axios.get(tickerUrl);
+
+        return tickerData;
+      })
+    );
+
+    const validationError = validateStockRatings(ratings, tickers);
+    if (validationError) {
+      return next({ errors: [{ message: validationError }] });
     }
+
+    const result =
+      ratings.length > 1
+        ? await toPairOfStockTickers(ratings, ip)
+        : await toSingleStockTicker(ratings[0], ip);
+
+    return res.json(result);
+  } catch (err) {
+    return next(toHttpError(err));
+  }
 }
-
-async function _sendStockData(records, ip, res, next) {
-    const stockData = records.length > 1
-        ? await _getMultipleStockRecords(records, ip, next)
-        : await _getSingleStockRecord(records[0], ip, next);
-
-    res.json(stockData);
-}
-
-async function _getMultipleStockRecords(records, ip, next) {
-    const stockRecords = await Promise.all(records.map(record => _getSingleStockRecord(record, ip, next)));
-
-    return {
-        stockData: _prepareMultipleStockData(stockRecords)
-    };
-}
-
-async function _getSingleStockRecord(record, ip, next) {
-    try {
-        return _prepareSingleStockData(record, ip);
-    } catch(err) {
-        next(prepareErrorPayload(err))
-    }
-}
-
-function _prepareMultipleStockData(stockRecords) {
-    return stockRecords.map(({stockData: {stock, price, likes}}, index, arr)=> {
-        const {stockData: {likes: otherStockLikes}} = index ? arr[0] : arr[1];
-
-        return {
-            stock,
-            price,
-            rel_likes: likes - otherStockLikes
-        };
-    });
-}
-
-async function _prepareSingleStockData(record, ip) {
-    const {symbol: stock, latestPrice: price} = record;
-    const {likes: {length}} = await stockRepository.getStockTicker(stock, ip);
-
-    return {
-        stockData: {
-            stock,
-            price,
-            likes: length
-        }
-    };
-}
-
-function _getStockRequestUrl(stock) {
-    return `${process.env.STOCK_API}/stock/${stock.toLowerCase()}/quote`;
-}
-
-exports.getStock = getStock;
