@@ -1,40 +1,36 @@
-'use strict';
+import mongoose from 'mongoose';
 
-const mongoose = require('mongoose');
-
-const replySchema = require('./reply');
+import { ReplySchema } from './reply.js';
 
 const Schema = mongoose.Schema;
-const threadSchema = new Schema({
-    board: {
-        type: String,
-        required: true
-    },
-    text: {
-        type: String,
-        required: true
-    },
-    delete_password: {
-        type: String,
-        required: true
-    },
-    reported: {
-        type: Boolean,
-        default: false
-    },
-    created_on: {
-        type: Date,
-        default: Date.now()
-    },
-    bumped_on: {
-        type: Date,
-        default: Date.now()
-    },
-    replies: {
-        type: [replySchema],
-        default: []
-    }
+const ThreadSchema = new Schema({
+  board: {
+    type: String,
+    required: true,
+  },
+  text: {
+    type: String,
+    required: true,
+  },
+  delete_password: {
+    type: String,
+    required: true,
+  },
+  replies: {
+    type: [ReplySchema],
+    default: [],
+  },
+  reported: {
+    type: Boolean,
+    default: false,
+  },
+  created_on: {
+    type: Date,
+    default: Date.now(),
+  },
+  bumped_on: {
+    type: Date,
+    default: Date.now(),
+  },
 });
-const Thread = mongoose.model('Thread', threadSchema);
-
-module.exports = Thread;
+export const Thread = mongoose.model('Thread', ThreadSchema);
