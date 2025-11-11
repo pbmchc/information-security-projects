@@ -101,4 +101,4 @@ function assertionAnalyser(body) {
   return assertions;
 }
 
-module.exports = assertionAnalyser;
+export default assertionAnalyser;

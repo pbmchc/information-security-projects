@@ -1,138 +1,124 @@
-'use strict';
+import { validationResult } from 'express-validator';
 
-const {validationResult} = require('express-validator');
-const {encrypt} = require('../helpers/encryptHelper');
-const {prepareErrorPayload} = require('../helpers/errorHelper');
-const threadRepository = require('../repositories/threadRepository');
+import * as threadRepository from '../repositories/threadRepository.js';
+import { encrypt } from '../utils/encryptUtils.js';
+import { toHttpError, toValidationError } from '../utils/errorUtils.js';
 
-const DEFAULT_SUCCESS_MESSAGE = 'success';
+const REQUEST_SUCCESS = 'Success';
 
-async function createThread(req, res, next) {
-    const {body, params: {board}} = req;
-    const {errors: [err]} = validationResult(req);
+export async function getSingleThread(req, res, next) {
+  try {
+    const {
+      query: { thread_id },
+    } = req;
+    const result = await threadRepository.getSingleThread(thread_id);
 
-    if(err) {
-        return next(prepareErrorPayload(err.msg));
-    }
-
-    try {
-        const thread = await _buildThread(body, board);
-
-        await threadRepository.createThread(thread);
-
-        res.redirect(`/b/${board}`);
-    } catch(err) {
-        next(prepareErrorPayload(err.msg));
-    }
+    return res.json(result);
+  } catch (err) {
+    return next(toHttpError(err));
+  }
 }
 
-async function getSingleThread(req, res, next) {
-    const {query: {thread_id}} = req;
+export async function createThread(req, res, next) {
+  const { errors } = validationResult(req);
+  if (errors.length > 0) {
+    return next({ errors: errors.map((err) => toValidationError(err)) });
+  }
 
-    try {
-        res.json(await threadRepository.getSingleThread(thread_id));
-    } catch(err) {
-        next(prepareErrorPayload(err.msg));
-    }
+  try {
+    const {
+      body,
+      params: { board },
+    } = req;
+    const { delete_password } = body;
+    const encryptedDeletePassword = await encrypt(delete_password);
+    const thread = { ...body, board, delete_password: encryptedDeletePassword };
+
+    await threadRepository.createThread(thread);
+
+    return res.redirect(`/b/${board}`);
+  } catch (err) {
+    return next(toHttpError(err));
+  }
 }
 
-async function getRelatedThreads(req, res, next) {
-    const {params: {board}} = req;
+export async function reportThread(req, res, next) {
+  try {
+    const {
+      body: { report_id },
+    } = req;
 
-    try {
-        res.json(await threadRepository.getRelatedThreads(board));
-    } catch(err) {
-        next(prepareErrorPayload(err.msg));
-    }
+    await threadRepository.reportThread(report_id);
+    return res.send(REQUEST_SUCCESS);
+  } catch (err) {
+    return next(toHttpError(err));
+  }
 }
 
-async function reportThread(req, res, next) {
-    const {body: {report_id}} = req;
+export async function deleteThread(req, res, next) {
+  try {
+    const { body } = req;
 
-    try {
-        await threadRepository.reportThread(report_id);
-        res.send(DEFAULT_SUCCESS_MESSAGE);
-    } catch(err) {
-        next(prepareErrorPayload(err.msg));
-    }
+    await threadRepository.deleteThread(body);
+    return res.send(REQUEST_SUCCESS);
+  } catch (err) {
+    return next(toHttpError(err));
+  }
 }
 
-async function deleteThread(req, res, next) {
-    const {body} = req;
+export async function createThreadReply(req, res, next) {
+  const { errors } = validationResult(req);
+  if (errors.length > 0) {
+    return next({ errors: errors.map((err) => toValidationError(err)) });
+  }
 
-    try {
-        await threadRepository.deleteThread(body);
-        res.send(DEFAULT_SUCCESS_MESSAGE);
-    } catch(err) {
-        next(prepareErrorPayload(err.msg));
-    }
+  try {
+    const {
+      body: { text, delete_password, thread_id },
+      params: { board },
+    } = req;
+    const encryptedDeletePassword = await encrypt(delete_password);
+    const reply = { text, delete_password: encryptedDeletePassword };
+
+    await threadRepository.createThreadReply(reply, thread_id);
+
+    return res.redirect(`/b/${board}/${thread_id}`);
+  } catch (err) {
+    return next(toHttpError(err));
+  }
 }
 
-async function createThreadReply(req, res, next) {
-    const {body: {text, delete_password, thread_id}, params: {board}} = req;
-    const {errors: [err]} = validationResult(req);
+export async function reportThreadReply(req, res, next) {
+  try {
+    const { body } = req;
 
-    if(err) {
-        return next(prepareErrorPayload(err.msg));
-    }
-
-    try {
-        const reply = await _buildReply({text, delete_password});
-
-        await threadRepository.createThreadReply(reply, thread_id);
-
-        res.redirect(`/b/${board}/${thread_id}`);
-    } catch(err) {
-        next(prepareErrorPayload(err.msg));
-    }
+    await threadRepository.reportThreadReply(body);
+    return res.send(REQUEST_SUCCESS);
+  } catch (err) {
+    return next(toHttpError(err));
+  }
 }
 
-async function reportThreadReply(req, res, next) {
-    const {body} = req;
+export async function deleteThreadReply(req, res, next) {
+  try {
+    const { body } = req;
 
-    try {
-        await threadRepository.reportThreadReply(body);
-        res.send(DEFAULT_SUCCESS_MESSAGE);
-    } catch(err) {
-        next(prepareErrorPayload(err.msg));
-    }
+    await threadRepository.deleteThreadReply(body);
+    return res.send(REQUEST_SUCCESS);
+  } catch (err) {
+    return next(toHttpError(err));
+  }
 }
 
-async function deleteThreadReply(req, res, next) {
-    const {body} = req;
+export async function getRelatedThreads(req, res, next) {
+  try {
+    const {
+      params: { board },
+    } = req;
+    const result = await threadRepository.getRelatedThreads(board);
 
-    try {
-        await threadRepository.deleteThreadReply(body);
-        res.send(DEFAULT_SUCCESS_MESSAGE);
-    } catch(err) {
-        next(prepareErrorPayload(err.msg));
-    }
+    return res.json(result);
+  } catch (err) {
+    return next(toHttpError(err));
+  }
 }
-
-async function _buildReply(reply) {
-    return {
-        ...reply,
-        delete_password: await _encryptDeletePassword(reply)
-    };
-}
-
-async function _buildThread(thread, board) {
-    return {
-        ...thread,
-        delete_password: await _encryptDeletePassword(thread),
-        board
-    };
-}
-
-function _encryptDeletePassword({delete_password}) {
-    return encrypt(delete_password);
-}
-
-exports.createThread = createThread;
-exports.getSingleThread = getSingleThread;
-exports.getRelatedThreads = getRelatedThreads;
-exports.reportThread = reportThread;
-exports.deleteThread = deleteThread;
-exports.createThreadReply = createThreadReply;
-exports.reportThreadReply = reportThreadReply;
-exports.deleteThreadReply = deleteThreadReply;

@@ -1,25 +1,21 @@
-'use strict';
-
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
-const replySchema = new Schema({
-    text: {
-        type: String,
-        required: true
-    },
-    delete_password: {
-        type: String,
-        required: true
-    },
-    created_on: {
-        type: Date,
-        default: Date.now()
-    },
-    reported: {
-        type: Boolean,
-        default: false
-    }
+export const ReplySchema = new Schema({
+  text: {
+    type: String,
+    required: true,
+  },
+  delete_password: {
+    type: String,
+    required: true,
+  },
+  reported: {
+    type: Boolean,
+    default: false,
+  },
+  created_on: {
+    type: Date,
+    default: Date.now(),
+  },
 });
-
-module.exports = replySchema;
