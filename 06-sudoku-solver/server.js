@@ -1,51 +1,43 @@
-require('dotenv').config();
+import 'dotenv/config';
 
-const cors        = require('cors');
-const express     = require('express');
-const expect      = require('chai').expect;
-const path        = require('path');
+import cors from 'cors';
+import express from 'express';
 
-const fccTestingRoutes  = require('./routes/fcctesting.js');
-const runner            = require('./test-runner');
+import { setupTestingRoutes } from './routes/fcctesting.js';
+import runner from './test-runner.js';
+
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 
-app.use(cors({origin: '*'})); //For FCC testing purposes only
-app.use('/public', express.static(path.join(__dirname, 'public')));
-app.use(express.urlencoded({ extended: false }));
+app.use(cors({ origin: '*' })); // For FCC testing purposes only
 app.use(express.json());
+app.use('/static', express.static('public'));
+app.use(express.urlencoded({ extended: false }));
 
-//Index page (static HTML)
-app.route('/')
-  .get(function (req, res) {
-    res.sendFile(process.cwd() + '/views/index.html');
-  });
-
-//For FCC testing purposes
-fccTestingRoutes(app);
-    
-//404 Not Found Middleware
-app.use(function(req, res, next) {
-  res.status(404)
-    .type('text')
-    .send('Not Found');
+app.route('/').get(function (_, res) {
+  res.sendFile('views/index.html', { root: import.meta.dirname });
 });
 
-//Start our server and tests!
-app.listen(process.env.PORT || 3000, function () {
-  console.log("Listening on port " + process.env.PORT);
-  // process.env.NODE_ENV='test'
-  if (process.env.NODE_ENV==='test') {
+setupTestingRoutes(app); // For FCC testing purposes
+
+app.use(function (_req, res, _next) {
+  res.status(404).type('txt').send('Not Found');
+});
+
+app.listen(PORT, function () {
+  console.log(`Listening on port: ${PORT}`);
+  if (process.env.NODE_ENV === 'test') {
     console.log('Running Tests...');
     setTimeout(function () {
       try {
         runner.run();
-      } catch (error) {
-        console.log('Tests are not valid:');
-        console.error(error);
+      } catch (err) {
+        console.log('Error while running tests:');
+        console.log(err);
       }
     }, 1500);
   }
 });
 
-module.exports = app; // for testing
+export default app; // For FCC testing purposes

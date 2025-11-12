@@ -1,15 +1,15 @@
 import { getCurrentElementIndex } from '../../utils/puzzle.utils.js';
 
-export const GridInspector = (function() {
-  function hasDuplicates(puzzle, {row, column}, {value, index}) {
+export const GridInspector = (function () {
+  function hasDuplicates(puzzle, { row, column }, { value, index }) {
     const rowStartIndex = getStartIndex(row);
     const columnStartIndex = getStartIndex(column);
-  
-    for(let i = rowStartIndex; i < rowStartIndex + 3; i++) {
-      for(let j = columnStartIndex; j < columnStartIndex + 3; j++) {
-        const currentElementIndex = getCurrentElementIndex({row: i, column: j});
-  
-        if(puzzle[currentElementIndex] === value && currentElementIndex !== index) {
+
+    for (let i = rowStartIndex; i < rowStartIndex + 3; i++) {
+      for (let j = columnStartIndex; j < columnStartIndex + 3; j++) {
+        const currentElementIndex = getCurrentElementIndex({ row: i, column: j });
+
+        if (puzzle[currentElementIndex] === value && currentElementIndex !== index) {
           return true;
         }
       }
@@ -23,4 +23,4 @@ export const GridInspector = (function() {
   }
 
   return { hasDuplicates };
-} ());
+})();

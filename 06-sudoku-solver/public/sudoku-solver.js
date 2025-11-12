@@ -1,9 +1,18 @@
-import { BOARD_ROW_SIZE, EMPTY_CELL_PLACEHOLDER, SOLVED_PUZZLE_REGEX, VALID_PUZZLE_LENGTH } from './constants/constants.js';
+import {
+  BOARD_ROW_SIZE,
+  EMPTY_CELL_PLACEHOLDER,
+  SOLVED_PUZZLE_REGEX,
+  VALID_PUZZLE_LENGTH,
+} from './constants/constants.js';
 import { ELEMENT_SELECTORS } from './constants/element-selectors.js';
 import { PuzzleInspector } from './inspectors/puzzle.inspector.js';
 import { puzzlesAndSolutions } from './puzzles/puzzle-strings.js';
-import { isValidPuzzleCharacter, validatePuzzleElements, validatePuzzleStructure } from './validators/puzzle-value.validator.js';
 import { getCurrentElementIndex } from './utils/puzzle.utils.js';
+import {
+  isValidPuzzleCharacter,
+  validatePuzzleElements,
+  validatePuzzleStructure,
+} from './validators/puzzle-value.validator.js';
 
 const BOARD_INITIAL_CHARACTER_CODE = 65;
 const SAMPLE_PUZZLE = puzzlesAndSolutions[4][0];
@@ -33,31 +42,32 @@ function setBoardListener() {
 }
 
 function setPuzzleInputListener() {
-  puzzleInputElement.addEventListener('input', ({target: {value}}) => updateBoard(value));
-}
-
-function setClearButtonListener() {
-  clearButtonElement.addEventListener('click', clearPuzzle);
+  puzzleInputElement.addEventListener('input', ({ target: { value } }) => updateBoard(value));
 }
 
 function setSolveButtonListener() {
   solveButtonElement.addEventListener('click', () => {
     const puzzle = puzzleInputElement.value;
 
-    if(canSolvePuzzle(puzzle)) {
+    if (canSolvePuzzle(puzzle)) {
       resetPuzzleError();
       solvePuzzle(puzzle);
     }
   });
 }
 
-function updatePuzzleInput({target}) {
-  if(!target.classList.contains(ELEMENT_SELECTORS.SUDOKU_CELL_CLASS) || !isValidPuzzleCharacter(target.value)) {
+function setClearButtonListener() {
+  clearButtonElement.addEventListener('click', clearPuzzle);
+}
+
+function updatePuzzleInput({ target }) {
+  if (!target.classList.contains(ELEMENT_SELECTORS.SUDOKU_CELL_CLASS)) {
     return;
   }
 
+  const puzzlePartToReplace = isValidPuzzleCharacter(target.value) ? target.value : '.';
   const puzzlePartIndex = getPuzzlePartIndex(target.id);
-  const puzzle = replacePuzzlePart(puzzleInputElement.value, target.value, puzzlePartIndex);
+  const puzzle = replacePuzzlePart(puzzleInputElement.value, puzzlePartToReplace, puzzlePartIndex);
 
   resetPuzzleError();
   puzzleInputElement.value = puzzle;
@@ -66,20 +76,22 @@ function updatePuzzleInput({target}) {
 function updateBoard(puzzle) {
   const error = validatePuzzleStructure(puzzle);
 
-  if(error) {
+  if (error) {
     return;
   }
 
   const puzzleArray = convertToPuzzleArray(puzzle);
 
   resetPuzzleError();
-  puzzleArray.forEach((part, index) => sudokuBoardCells[index].value = part !== EMPTY_CELL_PLACEHOLDER ? part : '');
+  puzzleArray.forEach(
+    (part, index) => (sudokuBoardCells[index].value = part !== EMPTY_CELL_PLACEHOLDER ? part : '')
+  );
 }
 
 function canSolvePuzzle(puzzle) {
   const error = validatePuzzleStructure(puzzle) || validatePuzzleElements(puzzle);
 
-  if(error) {
+  if (error) {
     showPuzzleError(error);
   }
 
@@ -89,9 +101,8 @@ function canSolvePuzzle(puzzle) {
 function solvePuzzle(puzzle) {
   const solution = getPuzzleSolution(puzzle);
 
-  if(!solution) {
+  if (!solution) {
     puzzleInputElement.value = SOLUTION_NOT_FOUND_MESSAGE;
-
     return;
   }
 
@@ -100,10 +111,20 @@ function solvePuzzle(puzzle) {
 }
 
 function clearPuzzle() {
-  const puzzle = Array.from({length: VALID_PUZZLE_LENGTH}).map(() => '.').join('');
+  const puzzle = Array.from({ length: VALID_PUZZLE_LENGTH })
+    .map(() => '.')
+    .join('');
 
   puzzleInputElement.value = puzzle;
   updateBoard(puzzle);
+}
+
+function showPuzzleError(message) {
+  errorMessageElement.innerText = message;
+}
+
+function resetPuzzleError() {
+  errorMessageElement.innerText = '';
 }
 
 function getPuzzlePartIndex(position) {
@@ -117,34 +138,43 @@ function getRowMultiplier(code) {
   return code - BOARD_INITIAL_CHARACTER_CODE;
 }
 
-function convertToPuzzleArray(puzzle) {
+export function convertToPuzzleArray(puzzle) {
   return puzzle.split('');
 }
 
-function showPuzzleError(message) {
-  errorMessageElement.innerText = message;
+function isPuzzleSolved(puzzle) {
+  return SOLVED_PUZZLE_REGEX.test(puzzle);
 }
 
-function resetPuzzleError() {
-  errorMessageElement.innerText = '';
+function isPuzzleValuePossible(puzzle, coordinates, value) {
+  return !PuzzleInspector.hasDuplicates(puzzle, coordinates, {
+    value: `${value}`,
+    index: getCurrentElementIndex(coordinates),
+  });
 }
 
-function getPuzzleSolution(puzzle) {
-  if(isPuzzleSolved(puzzle)) {
+function replacePuzzlePart(puzzle, replacement, index) {
+  return `${puzzle.substring(0, index)}${replacement || EMPTY_CELL_PLACEHOLDER}${puzzle.substring(
+    index + 1
+  )}`;
+}
+
+export function getPuzzleSolution(puzzle) {
+  if (isPuzzleSolved(puzzle)) {
     return puzzle;
   }
 
-  for(let row = 0; row < BOARD_ROW_SIZE; row++) {
-    for(let column = 0; column < BOARD_ROW_SIZE; column++) {
-      const coordinates = {row, column};
+  for (let row = 0; row < BOARD_ROW_SIZE; row++) {
+    for (let column = 0; column < BOARD_ROW_SIZE; column++) {
+      const coordinates = { row, column };
       const index = getCurrentElementIndex(coordinates);
 
-      if(puzzle[index] === EMPTY_CELL_PLACEHOLDER) {
-        for(let value = 1; value < BOARD_ROW_SIZE + 1; value++) {
-          if(isPuzzleValuePossible(puzzle, coordinates, value)) {
+      if (puzzle[index] === EMPTY_CELL_PLACEHOLDER) {
+        for (let value = 1; value < BOARD_ROW_SIZE + 1; value++) {
+          if (isPuzzleValuePossible(puzzle, coordinates, value)) {
             const solution = getPuzzleSolution(replacePuzzlePart(puzzle, value, index));
-            
-            if(solution) {
+
+            if (solution) {
               return solution;
             }
 
@@ -157,22 +187,3 @@ function getPuzzleSolution(puzzle) {
     }
   }
 }
-
-function isPuzzleSolved(puzzle) {
-  return SOLVED_PUZZLE_REGEX.test(puzzle);
-}
-
-function isPuzzleValuePossible(puzzle, coordinates, value) {
-  return !PuzzleInspector.hasDuplicates(puzzle, coordinates, {value: `${value}`, index: getCurrentElementIndex(coordinates)});
-}
-
-function replacePuzzlePart(puzzle, replacement, index) {
-  return `${puzzle.substring(0, index)}${replacement || EMPTY_CELL_PLACEHOLDER}${puzzle.substring(index + 1)}`;
-}
-
-try {
-  module.exports = {
-    convertToPuzzleArray,
-    getPuzzleSolution
-  }
-} catch (e) {}

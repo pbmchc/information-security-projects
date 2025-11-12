@@ -25,13 +25,11 @@
 *
 */
 
-'use strict';
+import fs from 'node:fs';
+import cors from 'cors';
+import runner from '../test-runner.js';
 
-const cors = require('cors');
-const fs = require('fs');
-const runner = require('../test-runner');
-
-module.exports = function (app) {
+export const setupTestingRoutes = (app) => {
 
   app.route('/_api/server.js')
     .get(function(req, res, next) {

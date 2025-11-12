@@ -4,5 +4,5 @@ export const ELEMENT_SELECTORS = {
   SOLVE_BUTTON_ID: 'solve-button',
   SUDOKU_BOARD_ID: 'sudoku-grid',
   SUDOKU_CELL_CLASS: 'sudoku-input',
-  SUDOKU_INPUT_ID: 'text-input'
+  SUDOKU_INPUT_ID: 'text-input',
 };
