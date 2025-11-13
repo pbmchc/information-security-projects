@@ -1,146 +1,56 @@
-require('dotenv').config();
+import 'dotenv/config';
 
-const http = require('http');
-const cors = require('cors');
-const express = require('express');
-const helmet = require('helmet');
-const nocache = require('nocache');
-const { Server } = require('socket.io');
-const expect = require('chai');
-const path = require('path');
+import http from 'node:http';
+import cors from 'cors';
+import express from 'express';
+import helmet from 'helmet';
+import nocache from 'nocache';
+import { Server } from 'socket.io';
 
-const fccTestingRoutes = require('./routes/fcctesting.js');
-const runner = require('./test-runner.js');
+import { setupGameServer } from './realtime-game-server.js';
+import { setupTestingRoutes } from './routes/fcctesting.js';
+import runner from './test-runner.js';
 
-const { EVENTS, GAMES_STATUS } = require('./public/constants.mjs');
-const { default: Collectible, COLLECTIBLE_SIZE } = require('./public/objects/Collectible.mjs');
-const { default: Player, PLAYER_SIZE } = require('./public/objects/Player.mjs');
-const { getRandomPosition } = require('./public/utils.mjs');
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-//For FCC testing purposes and enables user to connect from outside the hosting platform
-app.use(cors({ origin: '*' }));
-app.use('/public', express.static(path.join(__dirname, 'public')));
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
-app.use(express.urlencoded({ extended: false }));
+app.use(cors({ origin: '*' })); // For FCC testing purposes
 app.use(express.json());
+app.use('/static', express.static('public'));
+app.use(express.urlencoded({ extended: false }));
 
-app.use(nocache());
+app.use(helmet.hidePoweredBy({ setTo: 'PHP 7.4.3' }));
 app.use(helmet.noSniff());
 app.use(helmet.xssFilter());
-app.use(helmet.hidePoweredBy({ setTo: 'PHP 7.4.3' }));
+app.use(nocache());
 
-// Index page (static HTML)
-app.route('/')
-  .get(function (req, res) {
-    res.sendFile(process.cwd() + '/views/index.html');
-  }); 
-
-//For FCC testing purposes
-fccTestingRoutes(app);
-    
-// 404 Not Found Middleware
-app.use(function(req, res, next) {
-  res.status(404)
-    .type('text')
-    .send('Not Found');
+app.route('/').get(function (_, res) {
+  res.sendFile('views/index.html', { root: import.meta.dirname });
 });
 
-const port = process.env.PORT || 3000;
+setupTestingRoutes(app); // For FCC testing purposes
+setupGameServer(io);
 
-server.listen(port, () => {
-  console.log(`Listening on port ${port}`);
+app.use(function (_req, res, _next) {
+  res.status(404).type('txt').send('Not Found');
+});
 
+server.listen(PORT, () => {
+  console.log(`Listening on port ${PORT}`);
   if (process.env.NODE_ENV === 'test') {
     console.log('Running Tests...');
     setTimeout(function () {
       try {
         runner.run();
-      } catch (error) {
-        console.log('Tests are not valid:');
-        console.error(error);
+      } catch (err) {
+        console.log('Error while running tests:');
+        console.log(err);
       }
     }, 1500);
   }
 });
 
-let state = {
-  collectible: createNewCollectible(),
-  players: [],
-  status: GAMES_STATUS.INACTIVE
-};
-
-io.on('connection', socket => {
-  socket.on(EVENTS.NEW_PLAYER, () => {
-    const { id } = socket;
-    const { players } = state;
-
-    state = {
-      ...state,
-      players: [...players, createNewPlayer(id)],
-      status: GAMES_STATUS.ACTIVE
-    };
-
-    io.emit(EVENTS.GAME_STATE_CHANGE, state);
-  });
-
-  socket.on(EVENTS.PLAYER_MOVE, movingPlayer => {
-    const { players } = state;
-
-    state = {
-      ...state,
-      players: players.map(
-        player => player.id === movingPlayer.id
-          ? ({ ...movingPlayer })
-          : player
-      )
-    };
-
-    io.emit(EVENTS.GAME_STATE_CHANGE, state);
-  });
-
-  socket.on(EVENTS.PLAYER_COLLECT, ({ player: scoringPlayer, collectible }) => {
-    const { players, collectible: stateCollectible } = state;
-    const isActiveCollectible = stateCollectible.id === collectible.id;
-
-    if (!isActiveCollectible) {
-      return;
-    }
-
-    state = {
-      ...state,
-      collectible: createNewCollectible(),
-      players: players.map(player =>
-        player.id === scoringPlayer.id
-          ? ({ ...scoringPlayer, score: scoringPlayer.score + collectible.value })
-          : player
-      )
-    };
-
-    io.emit(EVENTS.GAME_STATE_CHANGE, state);
-  });
-
-  socket.on('disconnect', () => {
-    const { players } = state;
-
-    state = {
-      ...state,
-      players: players.filter(player => player.id !== socket.id)
-    };
-
-    io.emit(EVENTS.GAME_STATE_CHANGE, state);
-  });
-});
-
-function createNewCollectible(id = Date.now()) {
-  return new Collectible({ id, ...getRandomPosition(COLLECTIBLE_SIZE) });
-}
-
-function createNewPlayer(id) {
-  return new Player({ id, ...getRandomPosition(PLAYER_SIZE) });
-}
-
-module.exports = app; // For testing
+export default app; // For FCC testing purposes

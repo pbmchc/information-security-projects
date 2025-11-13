@@ -13,13 +13,12 @@ class Player {
     this.score = score;
   }
 
-  movePlayer(direction, velocity = DEFAULT_PLAYER_VELOCITY) {
-    const { x, y } = this;
+  calculateRank(players) {
+    const playersWithHigherScore = players.filter(({ score }) => score > this.score);
+    const place = playersWithHigherScore.length + 1;
+    const numberOfPlayers = players.length;
 
-    if (direction === DIRECTIONS.LEFT) this.x = this._moveBackwards(x, velocity);
-    if (direction === DIRECTIONS.UP) this.y = this._moveBackwards(y, velocity);
-    if (direction === DIRECTIONS.RIGHT) this.x = this._moveForwards(x, velocity, CANVAS_WIDTH);
-    if (direction === DIRECTIONS.DOWN) this.y = this._moveForwards(y, velocity, CANVAS_HEIGHT);
+    return `Rank: ${place}/${numberOfPlayers}`;
   }
 
   collision(collectible) {
@@ -30,23 +29,22 @@ class Player {
     return isHorizontalCollision && isVerticalCollision;
   }
 
-  calculateRank(players) {
-    const playersWithHigherScore = players.filter(({ score }) => score > this.score);
-    const place = playersWithHigherScore.length + 1;
-    const numberOfPlayers = players.length;
+  movePlayer(direction, velocity = DEFAULT_PLAYER_VELOCITY) {
+    const { x, y } = this;
 
-    return `Rank: ${place}/${numberOfPlayers}`;
+    if (direction === DIRECTIONS.LEFT) this.x = this.#moveBackwards(x, velocity);
+    if (direction === DIRECTIONS.UP) this.y = this.#moveBackwards(y, velocity);
+    if (direction === DIRECTIONS.RIGHT) this.x = this.#moveForwards(x, velocity, CANVAS_WIDTH);
+    if (direction === DIRECTIONS.DOWN) this.y = this.#moveForwards(y, velocity, CANVAS_HEIGHT);
   }
 
-  _moveBackwards(position, velocity) {
+  #moveBackwards(position, velocity) {
     const newPosition = position - velocity;
-
     return newPosition < 0 ? 0 : newPosition;
   }
 
-  _moveForwards(position, velocity, canvasSize) {
+  #moveForwards(position, velocity, canvasSize) {
     const newPosition = position + velocity;
-
     return newPosition > canvasSize - PLAYER_SIZE ? canvasSize - PLAYER_SIZE : newPosition;
   }
 }

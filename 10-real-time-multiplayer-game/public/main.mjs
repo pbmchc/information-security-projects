@@ -2,14 +2,12 @@ import {
   CANVAS_BASE_PADDING,
   CANVAS_FONT_SIZE,
   CANVAS_SIZE,
-  DIRECTIONS,
   DIRECTIONS_WITH_KEYS,
   EVENTS,
-  GAMES_STATUS
+  GAMES_STATUS,
 } from './constants.mjs';
-import Collectible, { COLLECTIBLE_SIZE } from './objects/Collectible.mjs';
+import { COLLECTIBLE_SIZE } from './objects/Collectible.mjs';
 import Player, { PLAYER_SIZE } from './objects/Player.mjs';
-import { getRandomPosition } from './utils.mjs';
 
 const socket = io();
 const context = setupCanvas();
@@ -19,20 +17,20 @@ socket.on('connect', () => {
   let state = {
     collectible: {},
     players: [],
-    status: GAMES_STATUS.INACTIVE
+    status: GAMES_STATUS.INACTIVE,
   };
 
   socket.emit(EVENTS.NEW_PLAYER);
 
-  socket.on(EVENTS.GAME_STATE_CHANGE, newState => {
+  socket.on(EVENTS.GAME_STATE_CHANGE, (newState) => {
     const { players: statePlayers } = newState;
-    const players = statePlayers.map(player => new Player(player));
+    const players = statePlayers.map((player) => new Player(player));
 
     mainPlayer = players.find(({ id }) => id === socket.id);
     state = { ...newState, players };
   });
 
-  document.addEventListener('keydown', event => {
+  document.addEventListener('keydown', (event) => {
     const { code } = event;
     const direction = getDirection(code);
 
@@ -52,7 +50,7 @@ socket.on('connect', () => {
     socket.emit(EVENTS.PLAYER_MOVE, mainPlayer);
   });
 
-  document.addEventListener('keyup', event => {
+  document.addEventListener('keyup', (event) => {
     const { code } = event;
     const direction = getDirection(code);
 
@@ -64,7 +62,7 @@ socket.on('connect', () => {
     mainPlayer.directions[direction] = false;
     socket.emit(EVENTS.PLAYER_MOVE, mainPlayer);
   });
- 
+
   renderGame();
 
   function renderGame() {
@@ -76,7 +74,7 @@ socket.on('connect', () => {
       if (mainPlayer.collision(collectible)) {
         socket.emit(EVENTS.PLAYER_COLLECT, { player: mainPlayer, collectible });
       }
-  
+
       drawCanvas();
       drawCanvasTobBar();
       drawCollectible(collectible);
@@ -87,14 +85,16 @@ socket.on('connect', () => {
   }
 
   function getDirection(code) {
-    return Object.keys(DIRECTIONS_WITH_KEYS).find(direction => DIRECTIONS_WITH_KEYS[direction].includes(code));
+    return Object.keys(DIRECTIONS_WITH_KEYS).find((direction) =>
+      DIRECTIONS_WITH_KEYS[direction].includes(code)
+    );
   }
 
   function movePlayer(player) {
-    const { id, directions } = player;
-    const activeDirections = Object.keys(directions).filter(key => directions[key]);
+    const { directions } = player;
+    const activeDirections = Object.keys(directions).filter((key) => directions[key]);
 
-    activeDirections.forEach(direction => player.movePlayer(direction));
+    activeDirections.forEach((direction) => player.movePlayer(direction));
   }
 
   function drawCanvas() {
@@ -111,9 +111,13 @@ socket.on('connect', () => {
     context.fillStyle = '#777';
     context.font = `${CANVAS_FONT_SIZE}px 'Press Start 2P'`;
     context.fillText(score, CANVAS_BASE_PADDING, CANVAS_FONT_SIZE * 2);
-    context.fillText(rank, CANVAS_SIZE.WIDTH - context.measureText(rank).width - CANVAS_BASE_PADDING, CANVAS_FONT_SIZE * 2);
+    context.fillText(
+      rank,
+      CANVAS_SIZE.WIDTH - context.measureText(rank).width - CANVAS_BASE_PADDING,
+      CANVAS_FONT_SIZE * 2
+    );
   }
-  
+
   function drawCollectible(collectible) {
     context.fillStyle = collectible.color;
     context.fillRect(collectible.x, collectible.y, COLLECTIBLE_SIZE, COLLECTIBLE_SIZE);
@@ -122,7 +126,7 @@ socket.on('connect', () => {
   function drawPlayer(player) {
     const { id } = player;
     const isMainPlayer = id === socket.id;
-    
+
     context.fillStyle = isMainPlayer ? '#ff6666' : '#bebebe';
     context.fillRect(player.x, player.y, PLAYER_SIZE, PLAYER_SIZE);
   }
@@ -133,6 +137,6 @@ function setupCanvas() {
 
   canvas.height = CANVAS_SIZE.HEIGHT;
   canvas.width = CANVAS_SIZE.WIDTH;
-  
+
   return canvas.getContext('2d');
 }

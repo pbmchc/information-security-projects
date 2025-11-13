@@ -1,32 +1,38 @@
 {
   "name": "real-time-multiplayer-game",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "type": "module",
   "description": "An FCC Security Challenge",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "cross-env PORT=3005 mocha --require @babel/register --recursive --exit --ui tdd tests/",
-    "watch": "nodemon server.js"
+    "watch": "nodemon server.js",
+    "test": "cross-env PORT=3005 mocha --exit --ui tdd tests/"
   },
   "dependencies": {
-    "@babel/core": "^7.27.1",
-    "@babel/preset-env": "^7.27.1",
-    "@babel/register": "^7.27.1",
-    "chai": "^4.3.7",
-    "chai-http": "^4.3.0",
+    "chai": "^6.2.1",
+    "chai-http": "^5.1.2",
     "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
-    "express": "^4.21.2",
-    "helmet": "^3.23.3",
-    "jsdom": "^21.1.2",
-    "mocha": "^10.8.2",
-    "nocache": "^3.0.4",
-    "socket.io": "^4.8.0",
-    "socket.io-client": "^4.7.5"
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "jsdom": "^27.2.0",
+    "mocha": "^11.7.5",
+    "nocache": "^4.0.0",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
-    "cross-env": "^7.0.3",
-    "nodemon": "^3.1.9"
+    "cross-env": "^10.1.0",
+    "nodemon": "^3.1.11"
   },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "keywords": [
+    "node",
+    "express",
+    "freecodecamp"
+  ],
   "license": "MIT"
 }
