@@ -1,24 +1,32 @@
 {
   "name": "american-british-english-translator",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "type": "module",
   "description": "An FCC Quality Assurance Challenge",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "mocha --require @babel/register --recursive --exit --ui tdd tests/",
-    "watch": "nodemon server.js"
+    "watch": "nodemon server.js",
+    "test": "mocha --exit --ui tdd tests/"
   },
   "dependencies": {
-    "@babel/core": "^7.27.1",
-    "@babel/preset-env": "^7.27.1",
-    "@babel/register": "^7.27.1",
-    "chai": "^4.3.7",
+    "chai": "^6.2.1",
     "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
-    "express": "^4.21.2",
-    "jsdom": "^21.1.2",
-    "mocha": "^10.8.2",
-    "nodemon": "^3.0.1"
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "jsdom": "^27.2.0",
+    "mocha": "^11.7.5"
   },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "keywords": [
+    "node",
+    "express",
+    "freecodecamp"
+  ],
   "license": "MIT"
 }

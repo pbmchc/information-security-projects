@@ -4,5 +4,5 @@ export const ELEMENT_SELECTORS = {
   LOCALE_SELECT_ID: 'locale-select',
   TEXT_INPUT_ID: 'text-input',
   TRANSLATE_BUTTON_ID: 'translate-btn',
-  TRANSLATED_SENTENCE_ID: 'translated-sentence'
+  TRANSLATED_SENTENCE_ID: 'translated-sentence',
 };

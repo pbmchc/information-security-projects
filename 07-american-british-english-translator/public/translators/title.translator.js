@@ -5,8 +5,8 @@ import { convertToTranslationKey } from './utils.js';
 const IGNORED_CHARACTERS_TITLES_REGEX = /[^\w-'\.]/g;
 const TRANSLATOR_NAME = 'TITLES_TRANSLATOR';
 
-export const TitleTranslator = (function() {
-  function translate({word}, locale) {
+export const TitleTranslator = (function () {
+  function translate({ word }, locale) {
     return BaseTranslator.translate(getTranslatorContext(word, locale));
   }
 
@@ -16,11 +16,9 @@ export const TitleTranslator = (function() {
       dictionary: AMERICAN_TO_BRITISH_TITLES,
       translationKey: convertToTranslationKey(word, IGNORED_CHARACTERS_TITLES_REGEX),
       word,
-      locale
+      locale,
     };
   }
 
-  return {
-    translate
-  };
-} ());
+  return { translate };
+})();

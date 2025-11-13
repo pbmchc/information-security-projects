@@ -4,5 +4,5 @@ export const IGNORED_CHARACTERS_REGEX = /[^\w-']/g;
 export const INPUT_TEXT_SPLIT_REGEX = /[\r\n\s]/;
 export const TARGET_LOCALE = {
   GB: 'american-to-british',
-  US: 'british-to-american'
+  US: 'british-to-american',
 };

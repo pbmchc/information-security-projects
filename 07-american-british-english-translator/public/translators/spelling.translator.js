@@ -4,8 +4,8 @@ import { convertToTranslationKey } from './utils.js';
 
 const TRANSLATOR_NAME = 'SPELLING_TRANSLATOR';
 
-export const SpellingTranslator = (function() {
-  function translate({word}, locale) {
+export const SpellingTranslator = (function () {
+  function translate({ word }, locale) {
     return BaseTranslator.translate(getTranslatorContext(word, locale));
   }
 
@@ -15,11 +15,9 @@ export const SpellingTranslator = (function() {
       dictionary: AMERICAN_TO_BRITISH_SPELLING,
       translationKey: convertToTranslationKey(word),
       word,
-      locale
+      locale,
     };
   }
 
-  return {
-    translate
-  };
-} ());
+  return { translate };
+})();

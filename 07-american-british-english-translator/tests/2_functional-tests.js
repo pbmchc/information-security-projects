@@ -1,8 +1,8 @@
-const chai = require('chai');
-const assert = chai.assert;
+import * as chai from 'chai';
 
-const { ELEMENT_SELECTORS } = require('../public/constants/element-selectors.js');
-let Translator;
+import { ELEMENT_SELECTORS } from '../public/constants/element-selectors.js';
+
+const { assert } = chai;
 
 suite('Functional Tests', () => {
   let clearButtonElement;
@@ -11,8 +11,8 @@ suite('Functional Tests', () => {
   let translateButtonElement;
   let translatedSentenceElement;
 
-  suiteSetup(() => {
-    Translator = require('../public/translator.js');
+  suiteSetup(async () => {
+    await import('../public/translator.js');
 
     clearButtonElement = document.getElementById(ELEMENT_SELECTORS.CLEAR_BUTTON_ID);
     errorMessageElement = document.getElementById(ELEMENT_SELECTORS.ERROR_MESSAGE_ID);
@@ -22,7 +22,7 @@ suite('Functional Tests', () => {
   });
 
   suite('Function onTranslate()', () => {
-    test("Translation appended to the `translated-sentence` `div`", done => {
+    test('Translation appended to the `translated-sentence` `div`', () => {
       const input = 'Apples are my favorite fruit.';
       const output = 'Apples are my <span class="highlight">favourite</span> fruit.';
 
@@ -30,10 +30,9 @@ suite('Functional Tests', () => {
       translateButtonElement.click();
 
       assert.equal(translatedSentenceElement.innerHTML, output);
-      done();
     });
 
-    test("'Everything looks good to me!' message appended to the `translated-sentence` `div`", done => {
+    test("'Everything looks good to me!' message appended to the `translated-sentence` `div`", () => {
       const input = 'This text is the same as its translation';
       const output = 'Everything looks good to me!';
 
@@ -41,10 +40,9 @@ suite('Functional Tests', () => {
       translateButtonElement.click();
 
       assert.equal(translatedSentenceElement.innerHTML, output);
-      done();
     });
 
-    test("'Error: No text to translate.' message appended to the `error message` `div`", done => {
+    test("'Error: No text to translate.' message appended to the `error message` `div`", () => {
       const input = '';
       const output = 'Error: No text to translate.';
 
@@ -53,12 +51,11 @@ suite('Functional Tests', () => {
 
       assert.equal(translatedSentenceElement.innerHTML, '');
       assert.equal(errorMessageElement.innerText, output);
-      done();
     });
   });
 
   suite('Function onClear()', () => {
-    test("Text area, `translated-sentence`, and `error-msg` are cleared", done => {
+    test('Text area, `translated-sentence`, and `error-msg` are cleared', () => {
       const content = 'Some content';
 
       errorMessageElement.innerText = content;
@@ -69,7 +66,6 @@ suite('Functional Tests', () => {
       assert.equal(errorMessageElement.innerText, '');
       assert.equal(textInputElement.value, '');
       assert.equal(translatedSentenceElement.innerHTML, '');
-      done();
     });
   });
 });
