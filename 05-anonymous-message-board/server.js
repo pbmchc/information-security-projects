@@ -13,16 +13,17 @@ const PORT = process.env.PORT || 3000;
 
 const app = express();
 
-app.use(
-  helmet.dnsPrefetchControl(),
-  helmet.frameguard(),
-  helmet.referrerPolicy({ policy: 'same-origin' })
-);
-
 app.use(cors({ origin: '*' })); // For FCC testing purposes
+
 app.use(express.json());
-app.use('/static', express.static('public'));
 app.use(express.urlencoded({ extended: true }));
+
+app.use(helmet.referrerPolicy({ policy: 'same-origin' }));
+app.use(helmet.xDnsPrefetchControl());
+app.use(helmet.xFrameOptions());
+app.use(helmet.xPoweredBy());
+
+app.use('/static', express.static('public'));
 
 app.route('/b/:board/:threadid').get(function (_, res) {
   res.sendFile('views/thread.html', { root: import.meta.dirname });

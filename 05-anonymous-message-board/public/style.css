@@ -7,6 +7,29 @@ body {
   padding: 10px;
 }
 
+hr {
+  margin-block: 10px;
+}
+
+input[type='text'],
+textarea {
+  width: 200px;
+  margin-block: 2.5px;
+}
+
+input[type='submit'] {
+  margin-block: 10px;
+}
+
+.container {
+  margin-block: min(5%, 50px);
+  margin-inline: 5%;
+}
+
+.spacer {
+  margin: 50px;
+}
+
 .replies {
   margin-left: 50px;
 }
@@ -18,7 +41,7 @@ body {
 }
 
 .newReply {
-  margin: 10px 5px 10px 5px;
+  margin: 10px 5px;
 }
 
 .thread {
@@ -27,10 +50,6 @@ body {
   margin-bottom: 5px;
 }
 
-.id {
+.identifier {
   font-size: 10.5px;
-}
-
-#submitNewThread {
-  margin: 50px;
 }
