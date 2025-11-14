@@ -9,9 +9,16 @@ import { setupRoutes } from './routes/api.js';
 import { setupTestingRoutes } from './routes/fcctesting.js';
 import runner from './test-runner.js';
 
+const ENV = process.env.NODE_ENV || 'development';
+const IS_DEV = ENV === 'development';
 const PORT = process.env.PORT || 3000;
 
 const app = express();
+
+app.use(cors({ origin: '*' })); // For FCC testing purposes
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 app.use(
   helmet.contentSecurityPolicy({
@@ -19,14 +26,15 @@ app.use(
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", 'code.jquery.com'],
       styleSrc: ["'self'"],
+      upgradeInsecureRequests: IS_DEV ? null : [],
     },
+    useDefaults: false,
   })
 );
+app.use(helmet.xPoweredBy());
+app.use(helmet.xXssProtection());
 
-app.use(cors({ origin: '*' })); // For FCC testing purposes
-app.use(express.json());
 app.use('/static', express.static('public'));
-app.use(express.urlencoded({ extended: false }));
 
 app.route('/').get(function (_, res) {
   res.sendFile('views/index.html', { root: import.meta.dirname });
