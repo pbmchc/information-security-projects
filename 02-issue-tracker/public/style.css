@@ -7,6 +7,25 @@ body {
   padding: 10px;
 }
 
+button[type=submit] {
+  margin-block: 10px;
+}
+
+input[type='text'],
+textarea {
+  width: 200px;
+  margin-block: 2.5px;
+}
+
+.container {
+  margin-block: min(5%, 50px);
+  margin-inline: 5%;
+}
+
+.spacer {
+  margin: 50px;
+}
+
 .issue {
   margin: 20px;
   padding: 5px;
@@ -14,10 +33,12 @@ body {
   border: 2px solid black;
 }
 
-.closed {
+.issue.closed {
   background-color: lightgrey;
 }
 
-.id {
+.identifier,
+.participants,
+.dates {
   font-size: 10.5px;
 }
