@@ -1,0 +1,12 @@
+input[type='text'] {
+  width: 200px;
+}
+
+.container {
+  margin-block: min(5%, 50px);
+  margin-inline: 5%;
+}
+
+.spacer {
+  margin: 50px;
+}
