@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import nocache from 'nocache';
 
 import { HTTP_ERROR_CODES } from './constants/httpErrorCodes.js';
+import hat from './middlewares/hat.js';
 import { setupRoutes } from './routes/api.js';
 import { setupTestingRoutes } from './routes/fcctesting.js';
 import runner from './test-runner.js';
@@ -14,13 +15,15 @@ const PORT = process.env.PORT || 3000;
 
 const app = express();
 
-app.use(helmet.hidePoweredBy({ setTo: 'PHP 4.2.0' }));
+app.use(cors({ origin: '*' })); // For FCC testing purposes
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+app.use(hat.fakePoweredBy('PHP 4.2.0'));
 app.use(nocache());
 
-app.use(cors({ origin: '*' })); // For FCC testing purposes
-app.use(express.json());
 app.use('/static', express.static('public'));
-app.use(express.urlencoded({ extended: false }));
 
 app.route('/').get(function (_, res) {
   res.sendFile('views/index.html', { root: import.meta.dirname });
