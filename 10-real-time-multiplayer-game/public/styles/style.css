@@ -11,6 +11,10 @@ canvas {
   border: 2px solid #d6d6d6;
 }
 
+hr {
+  margin: 25px;
+}
+
 .container {
   display: flex;
   flex-direction: column;
