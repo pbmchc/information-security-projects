@@ -1,0 +1,14 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directories:
+      - "/[0-1][0-9]-*"
+    schedule:
+      interval: "weekly"
+      day: "friday"
+      time: "17:00"
+      timezone: "Europe/Warsaw"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    versioning-strategy: increase
