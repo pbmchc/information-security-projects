@@ -10,7 +10,7 @@
     "test": "cross-env NODE_ENV=test nodemon server.js"
   },
   "dependencies": {
-    "chai": "^6.2.0",
+    "chai": "^6.2.1",
     "chai-http": "^5.1.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
