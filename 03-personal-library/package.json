@@ -19,7 +19,7 @@
     "helmet": "^8.1.0",
     "mocha": "^11.7.5",
     "mongodb": "^7.0.0",
-    "mongoose": "^9.1.5",
+    "mongoose": "^9.1.6",
     "nocache": "^4.0.0"
   },
   "devDependencies": {
