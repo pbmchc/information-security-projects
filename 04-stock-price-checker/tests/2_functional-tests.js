@@ -12,11 +12,11 @@ suite('Functional Tests', () => {
   suite('GET /api/stock-prices => stockData object', () => {
     const clearTestCollection = async () => Ticker.deleteMany({});
 
-    before(async () => {
+    suiteSetup(async () => {
       await clearTestCollection();
     });
 
-    after(async () => {
+    suiteTeardown(async () => {
       await clearTestCollection();
     });
 

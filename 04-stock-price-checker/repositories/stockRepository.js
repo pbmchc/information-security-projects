@@ -17,7 +17,7 @@ async function createTicker(symbol, ip) {
 }
 
 async function updateTickerLikes(symbol, ip) {
-  const options = { new: true, setDefaultsOnInsert: true, upsert: true };
+  const options = { returnDocument: 'after', setDefaultsOnInsert: true, upsert: true };
   const update = ip ? { symbol, $addToSet: { likes: ip } } : { symbol };
 
   try {
