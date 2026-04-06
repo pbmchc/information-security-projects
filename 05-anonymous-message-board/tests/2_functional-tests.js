@@ -47,11 +47,11 @@ suite('Functional Tests', function () {
     return Thread.deleteMany({ board: THREAD_TEST_PROJECT_BOARD });
   }
 
-  this.beforeEach(async () => {
+  setup(async () => {
     await clearTestThreads();
   });
 
-  this.afterAll(async () => {
+  suiteTeardown(async () => {
     await clearTestThreads();
   });
 
@@ -83,7 +83,7 @@ suite('Functional Tests', function () {
     });
 
     suite('GET', function () {
-      this.beforeEach(async () => {
+      setup(async () => {
         await createTestThread();
       });
 
@@ -102,7 +102,7 @@ suite('Functional Tests', function () {
     });
 
     suite('DELETE', function () {
-      this.beforeEach(async () => {
+      setup(async () => {
         thread = await createTestThread();
       });
 
@@ -131,7 +131,7 @@ suite('Functional Tests', function () {
     });
 
     suite('PUT', function () {
-      this.beforeEach(async () => {
+      setup(async () => {
         thread = await createTestThread();
       });
 
@@ -153,7 +153,7 @@ suite('Functional Tests', function () {
     let threadWithReplies;
 
     suite('POST', function () {
-      this.beforeEach(async () => {
+      setup(async () => {
         thread = await createTestThread();
       });
 
@@ -182,7 +182,7 @@ suite('Functional Tests', function () {
     });
 
     suite('GET', function () {
-      this.beforeEach(async () => {
+      setup(async () => {
         thread = await createTestThread();
         threadWithReplies = await createTestThreadReply(thread._id);
       });
@@ -205,7 +205,7 @@ suite('Functional Tests', function () {
     });
 
     suite('PUT', function () {
-      this.beforeEach(async () => {
+      setup(async () => {
         thread = await createTestThread();
         threadWithReplies = await createTestThreadReply(thread._id);
       });
@@ -226,7 +226,7 @@ suite('Functional Tests', function () {
     });
 
     suite('DELETE', function () {
-      this.beforeEach(async () => {
+      setup(async () => {
         thread = await createTestThread();
         threadWithReplies = await createTestThreadReply(thread._id);
       });

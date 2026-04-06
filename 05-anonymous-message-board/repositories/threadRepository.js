@@ -82,7 +82,7 @@ export async function createThreadReply(reply, id) {
   const update = { bumped_on: Date.now(), $push: { replies: reply } };
 
   try {
-    return await Thread.findByIdAndUpdate(id, update, { new: true });
+    return await Thread.findByIdAndUpdate(id, update, { returnDocument: 'after' });
   } catch {
     throw new CustomError(THREAD_REPLY_CREATE_ERROR);
   }

@@ -7,13 +7,12 @@
   "scripts": {
     "start": "node server.js",
     "watch": "nodemon server.js",
-    "test": "cross-env NODE_ENV=test nodemon server.js"
+    "test": "mocha --ui tdd --exit tests/**/*.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "chai": "^6.2.2",
     "chai-http": "^5.1.2",
-    "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "express-validator": "^7.3.1",
