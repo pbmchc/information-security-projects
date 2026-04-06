@@ -7,11 +7,10 @@
   "scripts": {
     "start": "node server.js",
     "watch": "nodemon server.js",
-    "test": "mocha --exit --ui tdd tests/"
+    "test": "mocha --ui tdd --exit tests/**/*.js"
   },
   "dependencies": {
     "chai": "^6.2.2",
-    "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "jsdom": "^27.4.0",
