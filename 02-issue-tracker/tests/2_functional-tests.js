@@ -26,7 +26,7 @@ suite('Functional Tests', () => {
     project: TEST_PROJECT_TITLE,
   };
 
-  beforeEach(async () => {
+  setup(async () => {
     await deleteIssue({ project: TEST_PROJECT_TITLE });
   });
 
