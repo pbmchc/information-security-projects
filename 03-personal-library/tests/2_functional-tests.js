@@ -11,11 +11,11 @@ suite('Functional Tests', () => {
   let TEST_BOOK_ID = '';
   const TEST_BOOK_TITLE = 'TEST_BOOK_TITLE';
 
-  beforeEach(async () => {
+  setup(async () => {
     await createBook({ title: TEST_BOOK_TITLE }).then(({ _id }) => (TEST_BOOK_ID = _id));
   });
 
-  afterEach(async () => {
+  teardown(async () => {
     await deleteBook({ id: TEST_BOOK_ID }).then(() => (TEST_BOOK_ID = ''));
   });
 
