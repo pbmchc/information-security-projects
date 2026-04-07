@@ -45,7 +45,7 @@ export async function updateBookComments({ id }, { comment }) {
     const result = await Book.findByIdAndUpdate(
       id,
       { $push: { comments: comment } },
-      { new: true }
+      { returnDocument: 'after' }
     );
     return toSingleBook(result);
   } catch (err) {

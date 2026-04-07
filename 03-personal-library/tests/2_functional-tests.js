@@ -3,6 +3,7 @@ import chaiHttp, { request } from 'chai-http';
 
 import { createBook, deleteBook } from '../repositories/bookRepository.js';
 import app from '../server.js';
+import { setupTestDatabase, teardownTestDatabase } from './setup.js';
 
 const { assert } = chai;
 chai.use(chaiHttp);
@@ -11,12 +12,20 @@ suite('Functional Tests', () => {
   let TEST_BOOK_ID = '';
   const TEST_BOOK_TITLE = 'TEST_BOOK_TITLE';
 
+  suiteSetup(async () => {
+    await setupTestDatabase();
+  });
+
   setup(async () => {
     await createBook({ title: TEST_BOOK_TITLE }).then(({ _id }) => (TEST_BOOK_ID = _id));
   });
 
   teardown(async () => {
     await deleteBook({ id: TEST_BOOK_ID }).then(() => (TEST_BOOK_ID = ''));
+  });
+
+  suiteTeardown(async () => {
+    await teardownTestDatabase();
   });
 
   suite('Routing tests', () => {

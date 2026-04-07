@@ -1,13 +1,8 @@
-import mongoose from 'mongoose';
-
 import * as bookController from '../controllers/bookController.js';
 import {
   createBookValidationChain,
   createBookCommentsValidationChain,
 } from '../validators/bookValidator.js';
-
-mongoose.set('strictQuery', false);
-mongoose.connect(process.env.DB);
 
 export const setupRoutes = (app) => {
   app
