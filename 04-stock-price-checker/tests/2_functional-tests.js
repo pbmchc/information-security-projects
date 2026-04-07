@@ -1,8 +1,9 @@
 import * as chai from 'chai';
 import chaiHttp, { request } from 'chai-http';
+import nock from 'nock';
 
-import { Ticker } from '../models/ticker.js';
 import app from '../server.js';
+import { setupTestDatabase, teardownTestDatabase } from './setup.js';
 import { SINGLE_TICKER_TEST_CASES, MULTIPLE_TICKERS_TEST_CASES } from './test-cases.js';
 
 const { assert } = chai;
@@ -10,17 +11,27 @@ chai.use(chaiHttp);
 
 suite('Functional Tests', () => {
   suite('GET /api/stock-prices => stockData object', () => {
-    const clearTestCollection = async () => Ticker.deleteMany({});
+    const setupRequestInterceptor = (ticker) => {
+      const basePath = process.env.STOCK_API;
+      nock(basePath)
+        .get((url) => url.includes(`/stock/${ticker}`))
+        .reply(200, {
+          latestPrice: 123.45,
+          symbol: ticker.toUpperCase(),
+        });
+    };
 
     suiteSetup(async () => {
-      await clearTestCollection();
+      await setupTestDatabase();
     });
 
     suiteTeardown(async () => {
-      await clearTestCollection();
+      await teardownTestDatabase();
     });
 
     SINGLE_TICKER_TEST_CASES.forEach(({ description, ticker, like, expectedLikeCount }) => {
+      setupRequestInterceptor(ticker);
+
       test(description, async () => {
         const { body, status } = await request
           .execute(app)
@@ -40,6 +51,8 @@ suite('Functional Tests', () => {
     });
 
     MULTIPLE_TICKERS_TEST_CASES.forEach(({ description, tickers, like }) => {
+      tickers.forEach((ticker) => setupRequestInterceptor(ticker));
+
       test(description, async () => {
         const { body, status } = await request
           .execute(app)

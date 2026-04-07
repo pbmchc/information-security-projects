@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node server.js",
     "watch": "nodemon server.js",
-    "test": "mocha --ui tdd --exit tests/**/*.js"
+    "test": "cross-env NODE_ENV=test mocha --ui tdd --timeout 60000 --exit tests/**/*-tests.js"
   },
   "dependencies": {
     "axios": "^1.13.5",
@@ -23,6 +23,8 @@
   },
   "devDependencies": {
     "cross-env": "^10.1.0",
+    "mongodb-memory-server": "^11.0.0",
+    "nock": "^14.0.0",
     "nodemon": "^3.1.14"
   },
   "engines": {
