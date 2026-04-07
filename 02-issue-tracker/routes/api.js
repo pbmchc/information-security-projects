@@ -1,5 +1,3 @@
-import mongoose from 'mongoose';
-
 import * as issueController from '../controllers/issueController.js';
 import { createIssuesParamsValidationChain } from '../validators/issuesParamsValidator.js';
 import {
@@ -7,9 +5,6 @@ import {
   createIssueUpdateValidationChain,
   createIssueDeletionValidationChain,
 } from '../validators/issueValidator.js';
-
-mongoose.set('strictQuery', false);
-mongoose.connect(process.env.DB);
 
 export const setupRoutes = (app) => {
   app

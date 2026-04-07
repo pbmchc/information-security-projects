@@ -3,6 +3,7 @@ import chaiHttp, { request } from 'chai-http';
 
 import { createIssue, deleteIssue } from '../repositories/issueRepository.js';
 import app from '../server.js';
+import { setupTestDatabase, teardownTestDatabase } from './setup.js';
 
 const { assert } = chai;
 chai.use(chaiHttp);
@@ -26,8 +27,16 @@ suite('Functional Tests', () => {
     project: TEST_PROJECT_TITLE,
   };
 
+  suiteSetup(async () => {
+    await setupTestDatabase();
+  });
+
   setup(async () => {
     await deleteIssue({ project: TEST_PROJECT_TITLE });
+  });
+
+  suiteTeardown(async () => {
+    await teardownTestDatabase();
   });
 
   suite('POST /api/issues/{project} => object with issue data', () => {
