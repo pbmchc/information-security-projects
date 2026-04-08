@@ -1,13 +1,8 @@
-import mongoose from 'mongoose';
-
 import * as threadController from '../controllers/threadController.js';
 import {
   createThreadValidationChain,
   createThreadReplyValidationChain,
 } from '../validators/threadValidator.js';
-
-mongoose.set('strictQuery', false);
-mongoose.connect(process.env.DB);
 
 export const setupRoutes = (app) => {
   app

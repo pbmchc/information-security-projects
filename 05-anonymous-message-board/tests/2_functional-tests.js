@@ -5,6 +5,7 @@ import { Thread } from '../models/thread.js';
 import * as threadRepository from '../repositories/threadRepository.js';
 import app from '../server.js';
 import { encrypt } from '../utils/encryptUtils.js';
+import { setupTestDatabase, teardownTestDatabase } from './setup.js';
 
 const { assert } = chai;
 chai.use(chaiHttp);
@@ -43,16 +44,16 @@ suite('Functional Tests', function () {
     );
   }
 
-  async function clearTestThreads() {
-    return Thread.deleteMany({ board: THREAD_TEST_PROJECT_BOARD });
-  }
+  suiteSetup(async () => {
+    await setupTestDatabase();
+  });
 
   setup(async () => {
-    await clearTestThreads();
+    await Thread.deleteMany({ board: THREAD_TEST_PROJECT_BOARD });
   });
 
   suiteTeardown(async () => {
-    await clearTestThreads();
+    await teardownTestDatabase();
   });
 
   suite('API ROUTING FOR /api/threads/:board', function () {
