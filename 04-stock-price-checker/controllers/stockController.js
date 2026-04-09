@@ -1,9 +1,9 @@
-import axios from 'axios';
-
 import * as stockRepository from '../repositories/stockRepository.js';
 import { toBoolean } from '../utils/booleanUtils.js';
-import { toHttpError } from '../utils/errorUtils.js';
+import { CustomError, toHttpError } from '../utils/errorUtils.js';
 import { validateStockRatings } from '../validators/stockValidator.js';
+
+const TICKER_FETCH_ERROR = (ticker) => `Error while fetching ticker ${ticker}`;
 
 async function toSingleStockTicker(rating, ip) {
   const { symbol: stock, latestPrice: price } = rating;
@@ -28,19 +28,23 @@ async function toPairOfStockTickers(ratings, ip) {
   };
 }
 
+async function fetchStockTicker(ticker) {
+  const url = `${process.env.STOCK_API}/stock/${ticker.toLowerCase()}/quote`;
+
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new CustomError(TICKER_FETCH_ERROR(ticker));
+  }
+
+  return response.json();
+}
+
 export async function getStock({ connection, query: { stock, like } }, res, next) {
   const ip = toBoolean(like) ? connection.remoteAddress : null;
   const tickers = Array.isArray(stock) ? stock.slice(0, 2) : [stock];
 
   try {
-    const ratings = await Promise.all(
-      tickers.map(async (ticker) => {
-        const tickerUrl = `${process.env.STOCK_API}/stock/${ticker.toLowerCase()}/quote`;
-        const { data: tickerData } = await axios.get(tickerUrl);
-
-        return tickerData;
-      })
-    );
+    const ratings = await Promise.all(tickers.map((ticker) => fetchStockTicker(ticker)));
 
     const validationError = validateStockRatings(ratings, tickers);
     if (validationError) {
@@ -54,6 +58,7 @@ export async function getStock({ connection, query: { stock, like } }, res, next
 
     return res.json(result);
   } catch (err) {
+    console.error(err instanceof Error ? err.message : 'Error while getting stock prices');
     return next(toHttpError(err));
   }
 }
