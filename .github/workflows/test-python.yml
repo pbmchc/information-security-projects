@@ -1,0 +1,23 @@
+on:
+  workflow_call:
+    inputs:
+      project_path:
+        required: true
+        type: string
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Run tests
+        run: |
+          cd "${{ inputs.project_path }}"
+          python -m unittest -v test_module.py
+        shell: bash
