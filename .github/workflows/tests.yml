@@ -1,7 +1,7 @@
 name: 'Tests'
 
 on:
-  pull_request:
+  push:
     branches:
       - master
 
@@ -21,8 +21,8 @@ jobs:
         id: changes
         run: bash .github/scripts/detect-changes.sh
         env:
-          GITHUB_EVENT_BEFORE: ${{ github.event.pull_request.base.sha }}
-          GITHUB_SHA: ${{ github.event.pull_request.head.sha }}
+          GITHUB_EVENT_BEFORE: ${{ github.event.before }}
+          GITHUB_SHA: ${{ github.sha }}
 
   test-node:
     name: Run tests for Node projects
