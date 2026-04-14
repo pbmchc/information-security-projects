@@ -28,6 +28,7 @@ jobs:
     name: Run tests for Node projects
     needs: detect-changes
     runs-on: ubuntu-latest
+    if: ${{ needs.detect-changes.outputs.projects_node != '[]' }}
     strategy:
       fail-fast: false
       matrix:
@@ -42,6 +43,7 @@ jobs:
     name: Run tests for Python projects
     needs: detect-changes
     runs-on: ubuntu-latest
+    if: ${{ needs.detect-changes.outputs.projects_python != '[]' }}
     strategy:
       fail-fast: false
       matrix:
