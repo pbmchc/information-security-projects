@@ -6,7 +6,8 @@ on:
         type: string
 
 jobs:
-  run:
+  run-tests:
+    name: Run project tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
