@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node server.js",
     "watch": "nodemon server.js",
-    "test": "cross-env NODE_ENV=test mocha --ui tdd --timeout 60000 --exit tests/**/*-tests.js"
+    "test": "cross-env NODE_ENV=test STOCK_API=https://api.example.com mocha --ui tdd --timeout 60000 --exit tests/**/*-tests.js"
   },
   "dependencies": {
     "chai": "^6.2.2",
