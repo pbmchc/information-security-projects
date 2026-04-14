@@ -57,5 +57,4 @@ const startServer = async () => {
 
 startServer();
 
-// Comment to trigger project test workflow
 export default app; // For FCC testing purposes
