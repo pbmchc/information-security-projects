@@ -1,0 +1,49 @@
+name: 'Tests'
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  detect-changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      projects_node: ${{ steps.changes.outputs.projects_node }}
+      projects_python: ${{ steps.changes.outputs.projects_python }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Determine changes for projects
+        id: changes
+        run: bash .github/scripts/detect-changes.sh
+        env:
+          GITHUB_EVENT_BEFORE: ${{ github.event.before }}
+          GITHUB_SHA: ${{ github.sha }}
+
+  test-node:
+    name: Run tests for Node projects
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.projects_node != '[]' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJson(needs.detect-changes.outputs.projects_node) }}
+    uses: ./.github/workflows/test-node.yml
+    with:
+      project_path: ${{ matrix.project.path }}
+
+  test-python:
+    name: Run tests for Python projects
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.projects_python != '[]' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJson(needs.detect-changes.outputs.projects_python) }}
+    uses: ./.github/workflows/test-python.yml
+    with:
+      project_path: ${{ matrix.project.path }}
