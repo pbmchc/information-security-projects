@@ -30,6 +30,7 @@ jobs:
     if: ${{ needs.detect-changes.outputs.projects_node != '[]' }}
     strategy:
       fail-fast: false
+      max-parallel: 2
       matrix:
         project: ${{ fromJson(needs.detect-changes.outputs.projects_node) }}
     uses: ./.github/workflows/test-node.yml
@@ -42,6 +43,7 @@ jobs:
     if: ${{ needs.detect-changes.outputs.projects_python != '[]' }}
     strategy:
       fail-fast: false
+      max-parallel: 2
       matrix:
         project: ${{ fromJson(needs.detect-changes.outputs.projects_python) }}
     uses: ./.github/workflows/test-python.yml

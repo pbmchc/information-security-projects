@@ -9,27 +9,42 @@ jobs:
   run-tests:
     name: Run project tests
     runs-on: ubuntu-latest
+    env:
+      MONGOMS_PREFER_GLOBAL_PATH: true
+      MONGOMS_VERSION: 8.2.5
     steps:
       - uses: actions/checkout@v6
 
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
-          node-version: '24'
+          node-version: 24
 
       - name: Enable pnpm
         run: |
           corepack enable
           corepack prepare pnpm@latest --activate
 
+      - name: Cache mongodb binaries
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/mongodb-binaries
+          key: mongodb-${{ env.MONGOMS_VERSION }}
+
+      - name: Set pnpm project cache key
+        env:
+          PROJECT_PATH: ${{ inputs.project_path }}
+        run: echo "PNPM_PROJECT_CACHE_KEY=$(echo ${PROJECT_PATH#*-})" >> $GITHUB_ENV
+
       - name: Cache pnpm store
         uses: actions/cache@v5
         with:
           path: |
             ~/.pnpm-store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles(format('{0}/pnpm-lock.yaml', inputs.project_path)) }}
+          key: pnpm-${{ env.PNPM_PROJECT_CACHE_KEY }}-${{ hashFiles(format('{0}/pnpm-lock.yaml', inputs.project_path)) }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-
+            pnpm-${{ env.PNPM_PROJECT_CACHE_KEY }}-
+            pnpm-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --store-dir ~/.pnpm-store
