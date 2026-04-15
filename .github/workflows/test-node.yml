@@ -20,10 +20,10 @@ jobs:
         with:
           node-version: 24
 
-      - name: Enable pnpm
-        run: |
-          corepack enable
-          corepack prepare pnpm@latest --activate
+      - name: Install pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: 10
 
       - name: Cache mongodb binaries
         uses: actions/cache@v5
@@ -39,8 +39,7 @@ jobs:
       - name: Cache pnpm store
         uses: actions/cache@v5
         with:
-          path: |
-            ~/.pnpm-store
+          path: ~/.pnpm-store
           key: pnpm-${{ env.PNPM_PROJECT_CACHE_KEY }}-${{ hashFiles(format('{0}/pnpm-lock.yaml', inputs.project_path)) }}
           restore-keys: |
             pnpm-${{ env.PNPM_PROJECT_CACHE_KEY }}-
