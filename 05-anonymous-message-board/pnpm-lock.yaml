@@ -36,8 +36,8 @@ importers:
         specifier: ^7.1.1
         version: 7.1.1
       mongoose:
-        specifier: ^9.4.1
-        version: 9.4.1
+        specifier: ^9.5.0
+        version: 9.5.0
     devDependencies:
       cross-env:
         specifier: ^10.1.0
@@ -613,8 +613,8 @@ packages:
     resolution: {integrity: sha512-qQKT4zQxXl8lLwBtHMWwaTcGfFOZviOJet3Oy/xmGk2gZH677CJM9EvtfdSkgWcATZhj/55JZ0rmy3myCT5lsA==}
     hasBin: true
 
-  kareem@3.2.0:
-    resolution: {integrity: sha512-VS8MWZz/cT+SqBCpVfNN4zoVz5VskR3N4+sTmUXme55e9avQHntpwpNq0yjnosISXqwJ3AQVjlbI4Dyzv//JtA==}
+  kareem@3.3.0:
+    resolution: {integrity: sha512-kpSuLD3/7RenBnjnJdOHXCKC8dTd1JzeOiJhN0necWWci6cC+qX+VuwPnMVgb+a4+KNJSfgqahpnfWaeDXCimw==}
     engines: {node: '>=18.0.0'}
 
   locate-path@5.0.0:
@@ -735,8 +735,8 @@ packages:
       socks:
         optional: true
 
-  mongoose@9.4.1:
-    resolution: {integrity: sha512-4rFBWa+/wdBQSfvnOPJBpiSG6UCEbhSQh865dEdaH9Y8WfHBUC+I2XT28dp0IBIGrEwmh+gzrgZgea5PbmrHWA==}
+  mongoose@9.5.0:
+    resolution: {integrity: sha512-B4blGFkFL1s0G24URuMvx0qTlx+gRVLmfO7WcSz8NcmW/XHEJ3G69capdyW1iRsGKiycp1tkwKHnxHbnwjwmPw==}
     engines: {node: '>=20.19.0'}
 
   mpath@0.9.0:
@@ -1665,7 +1665,7 @@ snapshots:
     dependencies:
       argparse: 2.0.1
 
-  kareem@3.2.0: {}
+  kareem@3.3.0: {}
 
   locate-path@5.0.0:
     dependencies:
@@ -1801,9 +1801,9 @@ snapshots:
       bson: 7.2.0
       mongodb-connection-string-url: 7.0.1
 
-  mongoose@9.4.1:
+  mongoose@9.5.0:
     dependencies:
-      kareem: 3.2.0
+      kareem: 3.3.0
       mongodb: 7.1.1
       mpath: 0.9.0
       mquery: 6.0.0
