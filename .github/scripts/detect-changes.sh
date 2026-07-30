@@ -14,7 +14,11 @@ subprojects='[
   {"path":"10-real-time-multiplayer-game","type":"node"}
 ]'
 
-changed_files=$(git diff --name-only "${GITHUB_EVENT_BEFORE}" "${GITHUB_SHA}")
+if [ "${GITHUB_EVENT_NAME:-}" = "workflow_dispatch" ]; then
+  paths='*'
+else
+  paths=$(git diff --name-only "${GITHUB_EVENT_BEFORE:-}" "${GITHUB_SHA:-}" 2>/dev/null || true)
+fi
 
 projects_node='[]'
 projects_python='[]'
@@ -25,7 +29,7 @@ while read -r entry; do
 
   path=$(jq -r '.path' <<<"$entry")
   type=$(jq -r '.type' <<<"$entry")
-  if printf '%s' "$changed_files" | grep -qE "^${path}/"; then
+  if [ "$paths" = "*" ] || printf '%s\n' "$paths" | grep -qE "^${path}/"; then
     if [ "$type" = "node" ]; then
       projects_node=$(jq -c --argjson entry "$entry" '. + [$entry]' <<<"$projects_node")
     elif [ "$type" = "python" ]; then
