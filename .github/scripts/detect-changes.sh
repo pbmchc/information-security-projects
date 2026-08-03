@@ -18,6 +18,13 @@ if [ "${GITHUB_EVENT_NAME:-}" = "workflow_dispatch" ]; then
   paths='*'
 else
   paths=$(git diff --name-only "${GITHUB_EVENT_BEFORE:-}" "${GITHUB_SHA:-}" 2>/dev/null || true)
+  while IFS= read -r path; do
+    case "$path" in
+      .github/scripts/detect-changes.sh|.github/workflows/tests.yml) paths='*'; break ;;
+      .github/workflows/test-node.yml) paths='node'; break ;;
+      .github/workflows/test-python.yml) paths='python'; break ;;
+    esac
+  done <<< "$paths"
 fi
 
 projects_node='[]'
@@ -29,7 +36,8 @@ while read -r entry; do
 
   path=$(jq -r '.path' <<<"$entry")
   type=$(jq -r '.type' <<<"$entry")
-  if [ "$paths" = "*" ] || printf '%s\n' "$paths" | grep -qE "^${path}/"; then
+
+  if [ "$paths" = "*" ] || [ "$paths" = "$type" ] || printf '%s\n' "$paths" | grep -qE "^${path}/"; then
     if [ "$type" = "node" ]; then
       projects_node=$(jq -c --argjson entry "$entry" '. + [$entry]' <<<"$projects_node")
     elif [ "$type" = "python" ]; then
