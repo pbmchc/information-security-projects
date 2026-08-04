@@ -1,6 +1,7 @@
 # This entrypoint file to be used in development.
-import password_cracker
 from unittest import main
+
+import password_cracker
 
 cracked_password1 = password_cracker.crack_sha1_hash('fbbe7e952d1050bfb09dfdb71d4c2ff2b3d845d2')
 print(cracked_password1)

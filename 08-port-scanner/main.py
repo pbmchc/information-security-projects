@@ -1,6 +1,7 @@
 # This entrypoint file to be used in development.
-import port_scanner
 from unittest import main
+
+import port_scanner
 
 # URL
 ports = port_scanner.get_open_ports("www.freecodecamp.org", [75, 85])

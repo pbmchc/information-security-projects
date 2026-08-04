@@ -1,6 +1,7 @@
-from common_ports import PORTS_AND_SERVICES, UNKNOWN_SERVICE
 import re
-from socket import error, getfqdn, gethostbyname, socket
+from socket import getfqdn, gethostbyname, socket
+
+from common_ports import PORTS_AND_SERVICES, UNKNOWN_SERVICE
 
 CONNECTION_TIMEOUT = 0.25
 PORT_OPEN = 0
@@ -20,7 +21,7 @@ def get_open_ports(target, port_range, verbose=False):
 
     try:
         ip = gethostbyname(target)
-    except error:
+    except OSError:
         return f'Error: {ERROR_INVALID_HOSTNAME if target_type == TARGET_TYPE_URL else ERROR_INVALID_IP_ADDRESS}'
 
     [starting_port, ending_port] = port_range
