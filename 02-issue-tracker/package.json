@@ -10,7 +10,7 @@
     "test": "cross-env NODE_ENV=test mocha --ui tdd --timeout 60000 --exit tests/**/*-tests.js"
   },
   "dependencies": {
-    "chai": "^6.2.2",
+    "chai": "^6.3.0",
     "chai-http": "^5.1.2",
     "dotenv": "^17.4.2",
     "ejs": "^3.1.10",
