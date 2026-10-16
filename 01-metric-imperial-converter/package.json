@@ -14,7 +14,7 @@
     "chai-http": "^5.1.2",
     "ejs": "^3.1.10",
     "express": "^5.2.1",
-    "helmet": "^8.1.0",
+    "helmet": "^8.3.0",
     "mocha": "^11.7.5"
   },
   "devDependencies": {
