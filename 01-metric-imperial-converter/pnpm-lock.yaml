@@ -21,8 +21,8 @@ importers:
         specifier: ^5.2.1
         version: 5.2.1(supports-color@8.1.1)
       helmet:
-        specifier: ^8.1.0
-        version: 8.1.0
+        specifier: ^8.3.0
+        version: 8.3.0
       mocha:
         specifier: ^11.8.0
         version: 11.8.0
@@ -427,8 +427,8 @@ packages:
     resolution: {integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==}
     hasBin: true
 
-  helmet@8.1.0:
-    resolution: {integrity: sha512-jOiHyAZsmnr8LqoPGmCjYAaiuWwjAPLgY8ZX2XrmHawt99/u1y6RgrZMTeoPfpUbV96HOalYgz1qzkRbw54Pmg==}
+  helmet@8.3.0:
+    resolution: {integrity: sha512-Qgpiaws3Sm30Av8Eah6sjMCZZwjlBu+E68rhpCWBshY1lb09HtLwj5GviX0OyQIn+ulUS0iX0AxN5n3tLZzz1w==}
     engines: {node: '>=18.0.0'}
 
   http-errors@2.0.1:
@@ -1284,7 +1284,7 @@ snapshots:
 
   he@1.2.0: {}
 
-  helmet@8.1.0: {}
+  helmet@8.3.0: {}
 
   http-errors@2.0.1:
     dependencies:
