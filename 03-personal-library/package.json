@@ -17,7 +17,7 @@
     "express-validator": "^7.3.2",
     "mocha": "^11.8.0",
     "mongodb": "^7.2.0",
-    "mongoose": "^9.5.0",
+    "mongoose": "^9.11.4",
     "nocache": "^4.0.0"
   },
   "devDependencies": {
