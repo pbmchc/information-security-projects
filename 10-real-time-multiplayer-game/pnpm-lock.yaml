@@ -12,8 +12,8 @@ importers:
         specifier: ^6.3.0
         version: 6.3.0
       chai-http:
-        specifier: ^5.1.2
-        version: 5.1.2(supports-color@8.1.1)
+        specifier: ^5.2.1
+        version: 5.2.1(supports-color@8.1.1)
       dotenv:
         specifier: ^17.4.2
         version: 17.4.2
@@ -249,8 +249,8 @@ packages:
     resolution: {integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==}
     engines: {node: '>=10'}
 
-  chai-http@5.1.2:
-    resolution: {integrity: sha512-UFup7mUGkkjmi9bGA7F6vfp3lzGQZjtL//CEd+a4C+vlynSv756XHDUK8PoYk/UpTBBXqSghjQaJOUMUxJXNaA==}
+  chai-http@5.2.1:
+    resolution: {integrity: sha512-RD0YerjlS5FA/j2yuJUNb9OjmLmwR7Fm708xiKlZn9LU49c6eEUBgVbecJ3GrF1fTG6oNgSkpI20fyKYGy2H3Q==}
     engines: {node: '>=18.20.0'}
 
   chai@6.3.0:
@@ -806,6 +806,9 @@ packages:
     resolution: {integrity: sha512-V7+vQEJ06Z+c5tSye8S+nHUfI51xoXIXjHQ99cQtKUkQqqO1kO/KCJUfZXuB47h/YBlDhah2H3hdUGXn8ie0oA==}
     engines: {node: '>=8.6'}
 
+  picoquery@2.5.0:
+    resolution: {integrity: sha512-j1kgOFxtaCyoFCkpoYG2Oj3OdGakadO7HZ7o5CqyRazlmBekKhbDoUnNnXASE07xSY4nDImWZkrZv7toSxMi/g==}
+
   proxy-addr@2.0.8:
     resolution: {integrity: sha512-5nnx0yGyVUcY6t9RnWcARWtwT9F1D8O9rt08htPvnd49W1IgZtmLkhu9WfMzQj1cFxjHIO6connUNVW5k7AVyQ==}
     engines: {node: '>= 0.10'}
@@ -1289,14 +1292,14 @@ snapshots:
 
   camelcase@6.3.0: {}
 
-  chai-http@5.1.2(supports-color@8.1.1):
+  chai-http@5.2.1(supports-color@8.1.1):
     dependencies:
       '@types/superagent': 8.1.9
       charset: 1.0.1
       cookiejar: 2.1.4
       is-ip: 5.0.1
       methods: 1.1.2
-      qs: 6.17.1
+      picoquery: 2.5.0
       superagent: 10.2.3(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
@@ -1876,6 +1879,8 @@ snapshots:
   picocolors@1.1.1: {}
 
   picomatch@2.3.2: {}
+
+  picoquery@2.5.0: {}
 
   proxy-addr@2.0.8:
     dependencies:
